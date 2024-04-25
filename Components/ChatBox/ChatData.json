@@ -1,0 +1,45 @@
+[
+    {
+      "key": "1",
+      "id": "1",
+      "data": "Hey, how's it going?",
+      "date": "25/04/2024",
+      "time": "09:30 AM"
+    },
+    {
+      "key": "2",
+      "id": "2",
+      "data": "Hey! I'm doing well, thanks for asking. How about you?",
+      "date": "25/04/2024",
+      "time": "09:31 AM"
+    },
+    {
+      "key": "3",
+      "id": "1",
+      "data": "I'm good too, just busy with work.",
+      "date": "25/04/2024",
+      "time": "09:32 AM"
+    },
+    {
+      "key": "4",
+      "id": "2",
+      "data": "Ah, I understand. Do you need any help?",
+      "date": "25/04/2024",
+      "time": "09:33 AM"
+    },
+    {
+      "key": "5",
+      "id": "1",
+      "data": "No, thanks. I'll manage.",
+      "date": "25/04/2024",
+      "time": "09:34 AM"
+    },
+    {
+      "key": "6",
+      "id": "2",
+      "data": "Alright, let me know if you change your mind.",
+      "date": "25/04/2024",
+      "time": "09:35 AM"
+    }
+  ]
+  
