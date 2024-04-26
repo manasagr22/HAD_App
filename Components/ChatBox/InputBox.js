@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react'
-import { FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Dimensions, FlatList, Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { Feather } from '@expo/vector-icons';
 import { Entypo } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+
 
 
 export default function InputBox(props) {
@@ -11,6 +12,15 @@ export default function InputBox(props) {
     const smileys = ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖', '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤬', '🤯', '😳', '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭', '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧', '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢', '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '😈', '👿', '👹', '👺', '🤡', '💩', '👻', '💀', '☠️', '👽', '👾', '🤖', '🎃'];
 
     const [isModalVisible, setModalVisible] = useState(false);
+
+    useEffect(() => {
+        if(searchText === "") {
+            // if(props.flatListRef.current) {
+            //     const offset = Dimensions.get('window').height
+            //     props.flatListRef.current.scrollToOffset({ animated: false, offset: 768 })
+            // }
+        }
+    }, [searchText])
 
     const toggleModal = () => {
         setModalVisible(!isModalVisible);
@@ -25,10 +35,70 @@ export default function InputBox(props) {
     };
 
     const handleSmileySelect = (smiley) => {
-        // Handle the selected smiley
-        // console.log('Selected smiley:', smiley);
-        setSearchText(searchText+smiley)
+        setSearchText(searchText + smiley)
     };
+
+    const convertFormat = (date) => {
+        const str = (date.split(","))[0].split("/")
+        var dd = str[1], mm = str[0];
+        dd = dd.length === 1 ? '0'+dd : dd;
+        mm = mm.length === 1 ? '0'+mm : mm;
+        return `${dd}/${mm}/${str[2]}`
+    }
+
+    const sendMessage = () => {
+        const options = {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            timeZone: 'Asia/Kolkata'
+        };
+
+        const options1 = {
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: true,
+            timeZone: 'Asia/Kolkata'
+        }
+        const date = convertFormat(new Date().toLocaleTimeString('en-US', options));
+        const time = new Date().toLocaleTimeString('en-US', options1);
+
+        var key = 0;
+
+        for (const d in props.chatData) {
+            key += props.chatData[d].length
+        }
+        const newMessage = {
+            key: String(key + 1),
+            id: "1",
+            data: searchText,
+            time: time
+        }
+
+        if (props.chatData[date]) {
+            // If the date exists, push the newMessage object into the array
+            props.setChatData(prevChatData => ({
+                ...prevChatData,
+                [date]: [...prevChatData[date], newMessage]
+            }));
+        } else {
+            // If the date doesn't exist, create a new key-value pair with the new date and initialize it with an array containing the newMessage object
+            props.setChatData(prevChatData => ({
+                ...prevChatData,
+                [date]: [newMessage]
+            }));
+        }
+
+        setSearchText("");
+        props.setCountMessages(props.countMessages + 1);
+        // if(props.flatListRef.current) {
+        //     const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + 2000)
+        //     props.flatListRef.current.scrollToOffset({ animated: false, offset: offset })
+        // }
+
+        // props.isKeyboardVisible ? props.flatListRef.current.scrollToEnd({ animated: false }) : props.flatListRef.current.scrollToOffset({ animated: false, offset: 0 })
+    }
 
     return (
         <View style={styles.mainContainer}>
@@ -70,7 +140,7 @@ export default function InputBox(props) {
                             />
                         </View>
                     </Modal>
-                    <TouchableOpacity style={{ bottom: 5 }}>
+                    <TouchableOpacity style={{ bottom: 5 }} onPress={sendMessage}>
                         <MaterialIcons name="send" size={33} color="blue" />
                     </TouchableOpacity>
                 </View>

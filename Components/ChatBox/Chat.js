@@ -14,19 +14,57 @@ import MessageBox from './MessageBox';
 
 export default function Chat(props) {
   const [data, setData] = useState(null);
+  const [chatDataWithLabels, setChatDataWithLabels] = useState(null);
   const [chatData, setChatData] = useState(ChatData);
   const [topPadding, setTopPadding] = useState(null);
   const [searchText, setSearchText] = useState(null);
+  const [countMessages, setCountMessages] = useState(0);
   const flatListRef = useRef(null);
 
   useEffect(() => {
     // console.log(props.isKeyboardVisible);
     ;
-}, [props.isKeyboardVisible])
+  }, [props.isKeyboardVisible])
+
+  useEffect(() => {
+    function getCorrectDate(date) {
+      const parts = date.split("/");
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+    function getChatDataWithLabels() {
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+
+      const processedData = [];
+
+      for (const date in chatData) {
+        const messageDate = new Date(getCorrectDate(date));
+
+        let dateLabel;
+        if (messageDate.toDateString() === today.toDateString()) {
+          dateLabel = "Today";
+        } else if (messageDate.toDateString() === yesterday.toDateString()) {
+          dateLabel = "Yesterday";
+        } else {
+          dateLabel = date;
+        }
+
+        processedData.push({
+          dateLabel: dateLabel,
+          messages: chatData[date]
+        });
+      }
+
+      return processedData;
+    }
+    setChatDataWithLabels(getChatDataWithLabels(chatData));
+  }, [chatData])
 
   const options = {
-    hour: '2-digit',
-    minute: '2-digit',
+    hour: 'numeric',
+    minute: 'numeric',
     hour12: true,
     timeZone: 'Asia/Kolkata'
   };
@@ -55,11 +93,16 @@ export default function Chat(props) {
   }, [searchText])
 
   useEffect(() => {
+    // console.log(props.isKeyboardVisible)
     // Scroll to the end of the list when data changes
-    if(flatListRef.current) {
-      flatListRef.current.scrollToEnd({ animated: false });
+    if (flatListRef.current) {
+      // console.log(props.isKeyboardVisible)
+      const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
+      flatListRef.current.scrollToOffset({ animated: false, offset: offset })
+      // flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+      // props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
     }
-  }, [data]);
+  }, [chatDataWithLabels, countMessages]);
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }}
@@ -93,22 +136,37 @@ export default function Chat(props) {
             /> : undefined}
           </View>
         </View>
-        {(props.isKeyboardVisible[0] && props.isKeyboardVisible[1] !== 0) || (!props.isKeyboardVisible[0] && props.isKeyboardVisible[1] === 0) ?  <View style={styles.rightView}>
+        {(props.isKeyboardVisible[0] && props.isKeyboardVisible[1] !== 0) || (!props.isKeyboardVisible[0] && props.isKeyboardVisible[1] === 0) ? <View style={styles.rightView}>
           <View style={styles.topView1}>
             <UserTitle name={Data[3].name} data={Data[3].data} />
           </View>
           <View style={styles.bottomContainer}>
-            <View style={[styles.bottomContainer1, {height: Dimensions.get('window').height - (90+80+70+props.isKeyboardVisible[1])}]}>
-            {topPadding && data ? <FlatList ref={flatListRef} data={chatData} contentContainerStyle={{ justifyContent: 'space-evenly', paddingTop: topPadding - 40, paddingBottom: 0 }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
-              <MessageBox senderId={item.id} userId={"1"} data={item.data} date={item.date} time={item.time} key={item.key} />
-            )}
-            onContentSizeChange={() => flatListRef.current.scrollToEnd({ animated: false })}
-      onLayout={() => flatListRef.current.scrollToEnd({ animated: false })}
-            /> : undefined}
+            <View style={[styles.bottomContainer1, { height: Dimensions.get('window').height - (90 + 80 + 70 + props.isKeyboardVisible[1]) }]}>
+              {data && chatDataWithLabels ? <FlatList ref={flatListRef} data={props.isKeyboardVisible ? chatDataWithLabels : chatDataWithLabels.reverse()} inverted={props.isKeyboardVisible ? false : true} contentContainerStyle={{ justifyContent: 'space-evenly' }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
+                <View>
+                  <View style={styles.dateSeparator}>
+                    <Text style={styles.dateSeparatorText}>{item.dateLabel}</Text>
+                  </View>
+                  <FlatList data={props.isKeyboardVisible ? item.messages : item.messages.reverse()} inverted={props.isKeyboardVisible ? false : true} contentContainerStyle={{ justifyContent: 'space-evenly', paddingBottom: 0 }} style={{ flexGrow: 1 }} renderItem={({ item: message }) => (
+                    <MessageBox senderId={message.id} userId={"1"} data={message.data} time={message.time} keyItem={message.key} />
+                  )} />
+                </View>
+              )}
+                onContentSizeChange={() => {
+                  const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
+                  flatListRef.current.scrollToOffset({ animated: false, offset: offset })
+                }}
+              onLayout={() => {
+                  const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
+                  flatListRef.current.scrollToOffset({ animated: false, offset: offset })
+                }}
+              // onContentSizeChange={() => props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 })}
+              // onLayout={() => props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 })}
+              /> : undefined}
             </View>
-              <View style={[styles.bottomContainer2, {marginBottom: props.isKeyboardVisible[1]}]}>
-                <InputBox isKeyboardVisible={props.isKeyboardVisible} />
-              </View>
+            <View style={[styles.bottomContainer2, { marginBottom: props.isKeyboardVisible[1] }]}>
+              <InputBox countMessages={countMessages} setCountMessages={setCountMessages} isKeyboardVisible={props.isKeyboardVisible} setChatData={setChatData} chatData={chatData} flatListRef={flatListRef} />
+            </View>
           </View>
         </View> : undefined}
       </View>
@@ -215,10 +273,13 @@ const styles = StyleSheet.create({
     marginRight: 'auto',
     flexDirection: "row",
     elevation: 5,
-    backgroundColor: "#f2f4f6",
+    // backgroundColor: "#f2f4f6",
+    backgroundColor: "white",
+    marginBottom: 10,
+    borderRadius: 10
   },
   bottomContainer: {
-    height: Dimensions.get('window').height - (90+80),
+    height: Dimensions.get('window').height - (90 + 80),
     // backgroundColor: "red",
   },
   bottomContainer1: {
@@ -232,6 +293,25 @@ const styles = StyleSheet.create({
     // paddingBottom: 100,
     // marginBottom: 100
     // backgroundColor: "red",
+  },
+  dateSeparator: {
+    padding: 5,
+    borderBottomWidth: 2,
+    borderBottomColor: "#e1e4e6",
+    justifyContent: "center",
+    alignItems: 'center'
+  },
+  dateSeparatorText: {
+    fontWeight: 'bold',
+    height: 25,
+    // width: 100,
+    backgroundColor: "white",
+    position: "absolute",
+    justifyContent: "center",
+    alignItems: 'center',
+    top: 0,
+    paddingLeft: 10,
+    paddingRight: 10
   },
   // bottomContainer2Scroll: {
   //   height: "15%",

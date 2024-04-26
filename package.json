@@ -65,5 +65,9 @@
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "main": "index.js",
+  "repository": "https://github.com/manasagr22/HAD_App.git",
+  "author": "manasagr22 <manas.agrawal1422@gmail.com>",
+  "license": "MIT"
 }
