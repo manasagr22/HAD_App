@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-export default function NavBar() {
+export default function NavBar(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -46,10 +46,10 @@ export default function NavBar() {
       </View>
 
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} activeOpacity={1}>
+        <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Login Patient")}>
           <Text style={styles.buttonText}>Login Patient</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.secondaryButton]} activeOpacity={1}>
+        <TouchableOpacity style={[styles.button, styles.secondaryButton]} activeOpacity={1} onPress={() => props.navigate("Register")}>
           <Text style={styles.buttonText}>Register Patient</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.avatarButton} onPress={toggleMenu} activeOpacity={1}>

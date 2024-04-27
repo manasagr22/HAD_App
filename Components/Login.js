@@ -4,38 +4,37 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+// import axios from 'axios';
+import { URL } from '@env';
 
 export default function Login(props) {
     const [email, setEmail] = useState(null);
     const [pass, setPass] = useState(null);
 
     async function signIn() {
-        const url = "http://localhost:8082/auth/login"
+        const url = URL+"/auth/login"
         props.setLoad(true);
 
         try {
-            const result = await axios.post(url, {
-                email: email,
-                password: pass
-            })
-            // const result = await fetch(url, {
-            //     method: "POST",
-            //     headers: {
-            //         "Content-Type": "application/json",
-            //     },
-            //     body: JSON.stringify({
-            //         email: email,
-            //         password: pass
-            //     }),
-            // });
+            const result = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: pass
+                }),
+            }).then(res =>res.json());
 
-            console.log(result);
+            // console.log(result);
 
             props.setLoad(false);
             if (result.role === "FIELDWORKER") {
                 props.setAlert({ type: "success", msg: "Login Successful!!!" });
                 props.setJwtToken(result.jwtToken);
+                props.storeData("user", result.username)
+                props.storeData("role", result.role)
             }
             else {
                 props.setAlert({ type: "danger", msg: "Invalid Login!" });
@@ -45,6 +44,10 @@ export default function Login(props) {
             props.setLoad(false);
             props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
         }
+
+        setTimeout(() => {
+            props.setAlert(null);
+        }, 1800)
     }
     return (
         <View style={styles.mainContainer}>
