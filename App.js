@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { PropsWithChildren } from 'react';
-import { AsyncStorage, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   Dimensions,
   Image,
@@ -23,54 +24,24 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import NavBar from './Components/NavBar';
 import Login from './Components/Login';
-import CryptoJS from "crypto-js";
 import RegisterPatient from './Components/RegisterPatient';
 import LoginPatient from './Components/LoginPatient';
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StreamChat } from 'stream-chat';
 import { API_KEY, USER_ID } from '@env';
 import Chat from './Components/ChatBox/Chat';
+import Spinner from './Components/Spinner';
+import Alert from './Components/Alert';
 
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   const [jwtToken, setJwtToken] = useState(null);
-
-  function checkToken() {
-    if (jwtToken === null) {
-      const jwt = AsyncStorage.getItem("/").then(text => text.json());
-      if (jwt === "" || jwt === null);
-      // navigate('/', { replace: true });
-      else {
-        console.log(decryptData(jwt))
-        setJwtToken(decryptData(jwt));
-      }
-    }
-    else {
-      const jwt = JSON.parse(localStorage.getItem("/"));
-      if (jwt === null);
-      // navigate('/', { replace: true });
-    }
-  }
-
-  function encryptData(text) {
-    const secretPass = "XkhZG4fW2t2W27ABbg";
-    const data = CryptoJS.AES.encrypt(
-      JSON.stringify(text),
-      secretPass
-    ).toString();
-    return data;
-  }
-
-  function decryptData(text) {
-    const secretPass = "XkhZG4fW2t2W27ABbg";
-    const bytes = CryptoJS.AES.decrypt(text, secretPass);
-    const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
-    return data;
-  }
+  const [load, setLoad] = useState(false);
+  const [alert, setAlert] = useState(null);
 
   const Stack = createNativeStackNavigator();
 
@@ -81,10 +52,21 @@ function App() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen name='Chat' component={Chatting} />
-              <Stack.Screen name="Login" component={LoginFW} />
-              <Stack.Screen name='Register' component={Register} />
-              <Stack.Screen name='Login Patient' component={LoginPat} />
+              <Stack.Screen name="Login">
+                {() => <LoginFW load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} setJwtToken={setJwtToken} jwtToken={jwtToken} />}
+              </Stack.Screen>
+              <Stack.Screen name="Dashboard">
+                {() => <DashboardParent load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} />}
+              </Stack.Screen>
+              <Stack.Screen name='Chat'>
+                {() => <Chatting load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} />}
+              </Stack.Screen>
+              <Stack.Screen name='Register'>
+                {() => <Register load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} />}
+              </Stack.Screen>
+              <Stack.Screen name='Login Patient'>
+                {() => <LoginPat load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} />}
+              </Stack.Screen>
             </Stack.Navigator>
           </NavigationContainer>
         </GestureHandlerRootView>
@@ -94,17 +76,67 @@ function App() {
 }
 
 const LoginFW = (props) => {
-  // function navigate(to) {
-  //   console.log("Reached")
-  //   props.navigation.navigate(to);
-  // }
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const value = await AsyncStorage.getItem("/");
+        return value;
+      } catch (e) {
+        return null
+      }
+    };
+
+    const storeData = async (value) => {
+      try {
+        await AsyncStorage.setItem('/', value);
+      } catch (e) {
+        ;
+      }
+    };
+
+    async function checkToken() {
+
+      if (props.jwtToken === null) {
+        const jwt = await getData();
+        if (jwt === "" || jwt === null);
+        else {
+          props.setJwtToken(jwt);
+        }
+      }
+      else {
+        await storeData(props.jwtToken)
+        navigation.navigate("Dashboard")
+        // const jwt = JSON.parse(localStorage.getItem("/"));
+        // if (jwt === null);
+        // // navigate('/', { replace: true });
+      }
+    }
+
+    checkToken();
+  }, [props.jwtToken])
 
   return (
     <View style={[styles.background, styles.container]}>
+      {props.load ? <Spinner /> : undefined}
+      {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={styles.mainContainer}>
         <ImageBackground style={styles.background} source={require('./Images/hospital1.png')} resizeMode='cover' />
         <View style={styles.overlay} />
-        <Login navigate={props.navigation.navigate} />
+        <Login navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} />
+      </View>
+    </View>
+  )
+}
+
+const DashboardParent = (props) => {
+  const navigation = useNavigation();
+
+  return (
+    <View style={[styles.background, styles.container]}>
+      <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
+        <NavBar navigate={navigation.navigate} />
       </View>
     </View>
   )
@@ -139,7 +171,7 @@ const LoginPat = (props) => {
 const Chatting = (props) => {
   const [isKeyboardVisible, setKeyboardVisible] = useState([false, 0]);
 
- useEffect(() => {
+  useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       ({ endCoordinates }) => {
@@ -167,7 +199,7 @@ const Chatting = (props) => {
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
         <NavBar navigate={props.navigation.navigate} />
         {/* <ScrollView> */}
-        <Chat navigate={props.navigation.navigate} isKeyboardVisible={isKeyboardVisible}/>
+        <Chat navigate={props.navigation.navigate} isKeyboardVisible={isKeyboardVisible} />
         {/* </ScrollView> */}
       </View>
     </View>

@@ -3,7 +3,8 @@ import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'reac
 import { MaterialIcons } from '@expo/vector-icons';
 import { Fontisto } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
-import { AsyncStorage } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
 export default function Login(props) {
     const [email, setEmail] = useState(null);
@@ -11,36 +12,39 @@ export default function Login(props) {
 
     async function signIn() {
         const url = "http://localhost:8082/auth/login"
-
-        props.setBackground("brightness(0.01)");
         props.setLoad(true);
 
-        // try {
-        //     const result = await fetch(url, {
-        //         method: "POST",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //         },
-        //         body: JSON.stringify({
-        //             email: email,
-        //             password: pass
-        //         }),
-        //     }).then((res) => res.json());
+        try {
+            const result = await axios.post(url, {
+                email: email,
+                password: pass
+            })
+            // const result = await fetch(url, {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //     },
+            //     body: JSON.stringify({
+            //         email: email,
+            //         password: pass
+            //     }),
+            // });
 
-        //     props.setBackground("");
-        //     props.setLoad(false);
-        //     if (result.role === "FIELDWORKER") {
-        //         // props.handleAlert("success", "Login Successful!!!");
-        //         props.setJwtToken(result.jwtToken);
-        //     }
-        //     else {
-        //         console.warn("Invalid Login!");
-        //         // props.handleAlert("danger", "Invalid Login!");
-        //     }
-        // } catch {
-        //     ;
-        // }
+            console.log(result);
 
+            props.setLoad(false);
+            if (result.role === "FIELDWORKER") {
+                props.setAlert({ type: "success", msg: "Login Successful!!!" });
+                props.setJwtToken(result.jwtToken);
+            }
+            else {
+                props.setAlert({ type: "danger", msg: "Invalid Login!" });
+            }
+        } catch (e) {
+            console.log(e)
+            props.setLoad(false);
+            props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+        }
     }
     return (
         <View style={styles.mainContainer}>
@@ -74,7 +78,7 @@ export default function Login(props) {
                         </View>
 
                         {/* Sign In button */}
-                        <TouchableOpacity style={styles.signInButton} onPress={() => props.navigate("Register")}>
+                        <TouchableOpacity style={styles.signInButton} onPress={signIn}>
                             <Text style={styles.signInText}>Sign In</Text>
                         </TouchableOpacity>
 

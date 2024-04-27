@@ -7,7 +7,6 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { ScrollView } from 'react-native-gesture-handler';
 import ChannelList from './ChannelList';
 import Data from './dummy.json';
-import ChatData from './ChatData.json';
 import UserTitle from './UserTitle';
 import InputBox from './InputBox';
 import MessageBox from './MessageBox';
@@ -15,10 +14,11 @@ import MessageBox from './MessageBox';
 export default function Chat(props) {
   const [data, setData] = useState(null);
   const [chatDataWithLabels, setChatDataWithLabels] = useState(null);
-  const [chatData, setChatData] = useState(ChatData);
+  const [chatData, setChatData] = useState(null);
   const [topPadding, setTopPadding] = useState(null);
   const [searchText, setSearchText] = useState(null);
   const [countMessages, setCountMessages] = useState(0);
+  const [user, setUser] = useState(null);
   const flatListRef = useRef(null);
 
   useEffect(() => {
@@ -59,8 +59,10 @@ export default function Chat(props) {
 
       return processedData;
     }
-    setChatDataWithLabels(getChatDataWithLabels(chatData));
-  }, [chatData])
+    if (chatData && user) {
+      setChatDataWithLabels(getChatDataWithLabels(chatData));
+    }
+  }, [chatData, user])
 
   const options = {
     hour: 'numeric',
@@ -93,14 +95,14 @@ export default function Chat(props) {
   }, [searchText])
 
   useEffect(() => {
-    // console.log(props.isKeyboardVisible)
-    // Scroll to the end of the list when data changes
-    if (flatListRef.current) {
-      // console.log(props.isKeyboardVisible)
-      const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
-      flatListRef.current.scrollToOffset({ animated: false, offset: offset })
-      // flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
-      // props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+    if (chatDataWithLabels !== null) {
+      if (flatListRef.current) {
+        // console.log(props.isKeyboardVisible)
+        const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
+        flatListRef.current.scrollToOffset({ animated: false, offset: offset })
+        // flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+        // props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+      }
     }
   }, [chatDataWithLabels, countMessages]);
 
@@ -130,17 +132,17 @@ export default function Chat(props) {
             <EvilIcons name="search" size={24} color="gray" style={styles.iconSearch} />
           </View>
           <View style={styles.channelContainer}>
-            {topPadding && data ? <FlatList data={data} contentContainerStyle={{ justifyContent: 'space-evenly', paddingTop: topPadding, paddingBottom: 70 }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
-              <ChannelList name={item.name} data={item.data} index={item.index} time={indianTime} />
+            {topPadding && data ? <FlatList data={data} contentContainerStyle={{ justifyContent: 'space-evenly', paddingTop: topPadding - 30, paddingBottom: 0 }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
+              <ChannelList name={item.name} data={item.data} senderId={"1"} index={item.id} setChatData={setChatData} setUser={setUser}/>
             )}
             /> : undefined}
           </View>
         </View>
         {(props.isKeyboardVisible[0] && props.isKeyboardVisible[1] !== 0) || (!props.isKeyboardVisible[0] && props.isKeyboardVisible[1] === 0) ? <View style={styles.rightView}>
-          <View style={styles.topView1}>
-            <UserTitle name={Data[3].name} data={Data[3].data} />
-          </View>
-          <View style={styles.bottomContainer}>
+          {user && chatDataWithLabels ? <View style={styles.topView1}>
+            <UserTitle name={user.name} />
+          </View> : undefined}
+          {chatDataWithLabels ? <View style={styles.bottomContainer}>
             <View style={[styles.bottomContainer1, { height: Dimensions.get('window').height - (90 + 80 + 70 + props.isKeyboardVisible[1]) }]}>
               {data && chatDataWithLabels ? <FlatList ref={flatListRef} data={props.isKeyboardVisible ? chatDataWithLabels : chatDataWithLabels.reverse()} inverted={props.isKeyboardVisible ? false : true} contentContainerStyle={{ justifyContent: 'space-evenly' }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
                 <View>
@@ -156,7 +158,7 @@ export default function Chat(props) {
                   const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
                   flatListRef.current.scrollToOffset({ animated: false, offset: offset })
                 }}
-              onLayout={() => {
+                onLayout={() => {
                   const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
                   flatListRef.current.scrollToOffset({ animated: false, offset: offset })
                 }}
@@ -167,7 +169,7 @@ export default function Chat(props) {
             <View style={[styles.bottomContainer2, { marginBottom: props.isKeyboardVisible[1] }]}>
               <InputBox countMessages={countMessages} setCountMessages={setCountMessages} isKeyboardVisible={props.isKeyboardVisible} setChatData={setChatData} chatData={chatData} flatListRef={flatListRef} />
             </View>
-          </View>
+          </View> : undefined}
         </View> : undefined}
       </View>
     </KeyboardAvoidingView>
