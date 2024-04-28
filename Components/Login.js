@@ -5,39 +5,45 @@ import { Fontisto } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // import axios from 'axios';
-import { URL } from '@env';
 
 export default function Login(props) {
     const [email, setEmail] = useState(null);
     const [pass, setPass] = useState(null);
 
+    const URL = "https://066a-103-156-19-229.ngrok-free.app";
+
     async function signIn() {
-        const url = URL+"/auth/login"
+        const url = URL + "/auth/login"
+        console.log(url)
         props.setLoad(true);
 
         try {
-            const result = await fetch(url, {
+            const res = await fetch(url, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     email: email,
-                    password: pass
+                    password: pass.toString()
                 }),
-            }).then(res =>res.json());
-
-            // console.log(result);
+            });
 
             props.setLoad(false);
-            if (result.role === "FIELDWORKER") {
-                props.setAlert({ type: "success", msg: "Login Successful!!!" });
-                props.setJwtToken(result.jwtToken);
-                props.storeData("user", result.username)
-                props.storeData("role", result.role)
+            if (!res.ok) {
+                props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
             }
             else {
-                props.setAlert({ type: "danger", msg: "Invalid Login!" });
+                const result = await res.json();
+                if (result.role === "FIELDWORKER") {
+                    props.setAlert({ type: "success", msg: "Login Successful!!!" });
+                    props.setJwtToken(result.jwtToken);
+                    props.storeData("user", result.username)
+                    props.storeData("role", result.role)
+                }
+                else {
+                    props.setAlert({ type: "danger", msg: "Invalid Login!" });
+                }
             }
         } catch (e) {
             console.log(e)

@@ -5,9 +5,9 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { URL } from "@env"
 
 export default function RegisterPatient(props) {
+    const URL = "https://066a-103-156-19-229.ngrok-free.app";
 
     const [focus, setFocus] = useState(null);
     const [gender, setGender] = useState("");
@@ -62,32 +62,92 @@ export default function RegisterPatient(props) {
 
     useEffect(() => {
         if (date === null || date === "")
-          setAge(null);
+            setAge(null);
         else {
-          var cur_date = new Date().toJSON().slice(0, 10);
-          const currentDateArray = cur_date.split("-").reverse()
+            var cur_date = new Date().toJSON().slice(0, 10);
+            const currentDateArray = cur_date.split("-").reverse()
 
-          var cur_date1 = new Date(date).toJSON().slice(0, 10);
-          const currentDateArray1 = cur_date1.split("-").reverse()
-          const dobYear = parseInt(currentDateArray1[2]);
-          const dobMonth = parseInt(currentDateArray1[1]);
-          const dobDay = parseInt(currentDateArray1[0]);
-    
-          // Convert date components to numbers
-          const currentYear = parseInt(currentDateArray[2]);
-          const currentMonth = parseInt(currentDateArray[1]);
-          const currentDay = parseInt(currentDateArray[0]);
-    
-          // Calculate age
-          let age = currentYear - dobYear;
-          if (currentMonth < dobMonth || (currentMonth === dobMonth && currentDay < dobDay)) {
-            age--; // Adjust age if birth month or day hasn't occurred yet in the current year
-          }
-          if (age < 0)
-            age = 0;
-          setAge(age.toString());
+            var cur_date1 = new Date(date).toJSON().slice(0, 10);
+            const currentDateArray1 = cur_date1.split("-").reverse()
+            const dobYear = parseInt(currentDateArray1[2]);
+            const dobMonth = parseInt(currentDateArray1[1]);
+            const dobDay = parseInt(currentDateArray1[0]);
+
+            // Convert date components to numbers
+            const currentYear = parseInt(currentDateArray[2]);
+            const currentMonth = parseInt(currentDateArray[1]);
+            const currentDay = parseInt(currentDateArray[0]);
+
+            // Calculate age
+            let age = currentYear - dobYear;
+            if (currentMonth < dobMonth || (currentMonth === dobMonth && currentDay < dobDay)) {
+                age--; // Adjust age if birth month or day hasn't occurred yet in the current year
+            }
+            if (age < 0)
+                age = 0;
+            setAge(age.toString());
         }
-      }, [date])
+    }, [date])
+
+    useEffect(() => {
+        async function getDistrict() {
+            try {
+                const res = await fetch(URL+"/fw/getFwDistrict", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + props.jwtToken
+                    }
+                })
+
+                if(!res.ok) {
+                    props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                    props.navigate("Login")
+                }
+                else {
+                    const result = await res.json();
+                    setDistrict(result.district);
+                }
+            }
+            catch {
+                props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                props.navigate("Login")
+            }
+        }
+
+        if(district === "")
+            getDistrict();
+    }, [district])
+
+    useEffect(() => {
+        async function getSubDiv() {
+            try {
+                const res = await fetch(URL+"/fw/getFwSubDistrict", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + props.jwtToken
+                    }
+                })
+
+                if(!res.ok) {
+                    props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                    props.navigate("Login")
+                }
+                else {
+                    const result = await res.json();
+                    setSubDiv(result.subdist);
+                }
+            }
+            catch {
+                props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                props.navigate("Login")
+            }
+        }
+
+        if(subdiv === "")
+            getSubDiv();
+    }, [subdiv])
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate;
@@ -135,7 +195,6 @@ export default function RegisterPatient(props) {
         try {
             const url = URL + "/fw/regPatient";
             const key = "Bearer " + props.jwtToken;
-            console.log("hello " + key)
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -146,25 +205,27 @@ export default function RegisterPatient(props) {
             });
 
             props.setLoad(false);
-            if(!response.ok) {
+            if (!response.ok) {
                 props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
             }
             else {
                 const responseData = await response.json();
-            if (responseData === true) {
-                props.setAlert({ type: "success", msg: "Registeration Successful!" });
-                setFName("")
-                setLName("")
-                setAabha("")
-                setAddress("")
-                setAge("")
-                setEmail("")
-                set
+                if (responseData === true) {
+                    props.setAlert({ type: "success", msg: "Registeration Successful!" });
+                    setFName("")
+                    setLName("")
+                    setAabha("")
+                    setAddress("")
+                    setAge("")
+                    setEmail("")
+                    setDate("")
+                    setMobile("")
+                    setGender("")
+                }
+                else {
+                    props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+                }
             }
-            else {
-                props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
-            }
-        }
         } catch (error) {
             props.setLoad(false);
             props.setAlert({ type: "danger", msg: "Some Error Occurred!" });

@@ -30,7 +30,6 @@ import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { StreamChat } from 'stream-chat';
-// import { API_KEY, USER_ID } from '@env';
 import Chat from './Components/ChatBox/Chat';
 import Spinner from './Components/Spinner';
 import Alert from './Components/Alert';
@@ -42,6 +41,7 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
+  const URL = "https://066a-103-156-19-229.ngrok-free.app";
 
   const Stack = createNativeStackNavigator();
 
@@ -62,6 +62,10 @@ function App() {
     }
   };
 
+  async function clear() {
+    await AsyncStorage.clear();
+  }
+
   useEffect(() => {
     async function checkToken() {
 
@@ -73,7 +77,30 @@ function App() {
         }
       }
       else {
-        await storeData("/", jwtToken)
+        try {
+          const key = "Bearer " + jwtToken;
+          const res = await fetch(URL+"/fw/isLoggedIn", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": key
+            }
+          })
+          if(!res.ok) {
+            clear();
+          }
+          else {
+            if(await res.json()) {
+              await storeData("/", jwtToken)
+            }
+            else {
+              clear();
+            }
+          }
+        }
+        catch {
+          clear();
+        }
       }
     }
     checkToken();
@@ -112,6 +139,7 @@ function App() {
 
 const LoginFW = (props) => {
   const navigation = useNavigation();
+  const URL = "https://066a-103-156-19-229.ngrok-free.app";
 
   async function clear() {
     await AsyncStorage.clear();
@@ -128,12 +156,36 @@ const LoginFW = (props) => {
         }
       }
       else {
-        await props.storeData("/", props.jwtToken)
-        navigation.navigate("Dashboard")
+        try {
+          const key = "Bearer " + props.jwtToken;
+          const res = await fetch(URL+"/fw/isLoggedIn", {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": key
+            }
+          })
+          if(!res.ok) {
+            clear();
+          }
+          else {
+            const r = await res.json();
+            if(r == true) {
+              await props.storeData("/", props.jwtToken)
+              navigation.navigate("Dashboard")
+            }
+            else {
+              clear();
+            }
+          }
+        }
+        catch (e) {
+          console.log(e)
+          clear();
+        }
       }
     }
     checkToken();
-    // clear();
   }, [props.jwtToken])
 
   return (

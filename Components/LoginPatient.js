@@ -2,10 +2,16 @@ import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
-export default function LoginPatient() {
+export default function LoginPatient(props) {
     const [focus, setFocus] = useState(null);
     const [aabha, setAabha] = useState("");
     const [pass, setPass] = useState("");
+
+    const loginHandler = () => {
+        props.setAlert({type: "success", msg: "Login Successful!"})
+        // navigate('/fw/loggedInPatient', {replace: true});
+    }
+
     return (
         <View style={styles.mainContainer}>
             <View style={styles.container}>
@@ -42,7 +48,7 @@ export default function LoginPatient() {
                             }}
                         />
                     </View>
-                    <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={loginHandler}>
                         <Text style={styles.buttonText}>Take Survey</Text>
                     </TouchableOpacity>
                 </View>
