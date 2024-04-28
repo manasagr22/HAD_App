@@ -25,7 +25,7 @@ export default function Login(props) {
                 },
                 body: JSON.stringify({
                     email: email,
-                    password: pass.toString()
+                    password: pass
                 }),
             });
 
@@ -37,9 +37,11 @@ export default function Login(props) {
                 const result = await res.json();
                 if (result.role === "FIELDWORKER") {
                     props.setAlert({ type: "success", msg: "Login Successful!!!" });
-                    props.setJwtToken(result.jwtToken);
                     props.storeData("user", result.username)
                     props.storeData("role", result.role)
+                    setEmail("")
+                    setPass("")
+                    props.setJwtToken(result.jwtToken);
                 }
                 else {
                     props.setAlert({ type: "danger", msg: "Invalid Login!" });
@@ -70,6 +72,7 @@ export default function Login(props) {
                                 placeholder="Email"
                                 placeholderTextColor="white"
                                 keyboardType="email-address"
+                                value={email}
                                 onChangeText={(text) => setEmail(text)}
                             />
                             <Fontisto name="email" size={24} color="#d7da43" style={styles.icon} />
@@ -81,6 +84,7 @@ export default function Login(props) {
                                 placeholder="Password"
                                 placeholderTextColor="white"
                                 secureTextEntry={true}
+                                value={pass}
                                 onChangeText={(text) => setPass(text)}
                             />
                             <AntDesign name="lock1" size={24} color="#d7da43" style={styles.icon} />

@@ -209,7 +209,7 @@ const DashboardParent = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar navigate={navigation.navigate} />
+        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
       </View>
     </View>
   )
@@ -247,7 +247,7 @@ const Register = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar navigate={navigation.navigate} />
+        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
         <ScrollView ref={scrollViewRef}>
           <RegisterPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} scrollViewRef={scrollViewRef}/>
         </ScrollView>
@@ -263,7 +263,7 @@ const LoginPat = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBar navigate={navigation.navigate} />
+        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
         <ScrollView>
           <LoginPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
         </ScrollView>
@@ -302,7 +302,7 @@ const Chatting = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBar navigate={navigation.navigate} />
+        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
         <Chat navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible}/>
       </View>
     </View>

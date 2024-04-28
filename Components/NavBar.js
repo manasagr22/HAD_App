@@ -1,9 +1,12 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
 export default function NavBar(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
+
+  const URL = "https://066a-103-156-19-229.ngrok-free.app";
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -13,6 +16,51 @@ export default function NavBar(props) {
     setActiveIndex(index);
     // Perform navigation or other actions here
   };
+
+  async function clear() {
+    await AsyncStorage.clear();
+  }
+
+  async function logOut() {
+    try {
+      props.setLoad(true);
+      const url = URL + "/auth/logout"
+      const key = "Bearer " + props.jwtToken;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token: key
+        })
+      });
+
+      props.setLoad(false);
+
+      if (!response.ok)
+        props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+      else {
+        const result = await response.json();
+        if (result === true) {
+          clear();
+          // props.setJwtToken(null);
+          props.navigate("Login");
+        }
+        else {
+          props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+        }
+      }
+
+      setTimeout(() => {
+        props.setAlert(null);
+      }, 1800);
+    }
+    catch {
+      props.setLoad(false);
+      props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+    }
+  }
 
 
   return (
@@ -75,7 +123,7 @@ export default function NavBar(props) {
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>Help</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.menuItem, styles.logoutButton]} activeOpacity={1}>
+            <TouchableOpacity style={[styles.menuItem, styles.logoutButton]} onPress={logOut}>
               <Text style={[styles.menuItemText, styles.logoutButtonText]}>Sign Out</Text>
             </TouchableOpacity>
           </View>
