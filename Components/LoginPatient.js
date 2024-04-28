@@ -9,6 +9,10 @@ export default function LoginPatient(props) {
 
     const loginHandler = () => {
         props.setAlert({type: "success", msg: "Login Successful!"})
+
+        setTimeout(() => {
+            props.setAlert(null);
+        }, 1800);
         // navigate('/fw/loggedInPatient', {replace: true});
     }
 
