@@ -33,7 +33,9 @@ import { StreamChat } from 'stream-chat';
 import Chat from './Components/ChatBox/Chat';
 import Spinner from './Components/Spinner';
 import Alert from './Components/Alert';
-
+import LoggedInPatient from './Components/LoggedInPatient';
+import PatientQn from './Components/PatientQn';
+import NavBarPatient from './Components/NavBarPatient';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -41,8 +43,8 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const URL = "https://066a-103-156-19-229.ngrok-free.app";
-
+  const URL = "https://17ed-119-161-98-68.ngrok-free.app";
+  // const navigation = useNavigation();
   const Stack = createNativeStackNavigator();
 
   const getData = async (val) => {
@@ -129,6 +131,14 @@ function App() {
               <Stack.Screen name='Login Patient'>
                 {() => <LoginPat load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
+
+              <Stack.Screen name='Patient Questionnaire'>
+                {() => <PatientQuesn load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+              </Stack.Screen>
+
+              <Stack.Screen name='LoggedIn Patient'>
+                {() => <LoggedPat load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+              </Stack.Screen>
             </Stack.Navigator>
           </NavigationContainer>
         </GestureHandlerRootView>
@@ -139,7 +149,7 @@ function App() {
 
 const LoginFW = (props) => {
   const navigation = useNavigation();
-  const URL = "https://066a-103-156-19-229.ngrok-free.app";
+  const URL = "https://17ed-119-161-98-68.ngrok-free.app";
 
   async function clear() {
     await AsyncStorage.clear();
@@ -305,6 +315,89 @@ const Chatting = (props) => {
         <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
         <Chat navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible}/>
       </View>
+    </View>
+  )
+}
+
+const LoggedPat = (props) => {
+  const [isKeyboardVisible, setKeyboardVisible] = useState([false, 0]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      ({ endCoordinates }) => {
+        setKeyboardVisible([true, endCoordinates.height]);
+        const keyboardHeight = Dimensions.get('window').height - endCoordinates.screenY;
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible([false, 0]);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
+  return(<View style={[styles.background, styles.container]}>
+    {props.load ? <Spinner /> : undefined}
+      {props.alert ? <Alert alert={props.alert} /> : undefined}
+          <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
+
+            <NavBarPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
+              <View >
+                  <Text >Logged In </Text>
+              </View>
+          </View>
+  </View>)
+}
+
+const PatientQuesn = (props) => {
+  const [isKeyboardVisible, setKeyboardVisible] = useState([false, 0]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      ({ endCoordinates }) => {
+        setKeyboardVisible([true, endCoordinates.height]);
+        const keyboardHeight = Dimensions.get('window').height - endCoordinates.screenY;
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible([false, 0]);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
+  return(
+    <View style={[styles.background, styles.container]}>
+
+        <NavBarPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
+
+
+        {props.load ? <Spinner /> : undefined}
+      {props.alert ? <Alert alert={props.alert} /> : undefined}
+
+          <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
+              <PatientQn navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
+
+          </View>
+  
+
+        
     </View>
   )
 }

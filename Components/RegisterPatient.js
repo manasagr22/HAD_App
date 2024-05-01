@@ -5,9 +5,9 @@ import BouncyCheckbox from "react-native-bouncy-checkbox";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function RegisterPatient(props) {
-    const URL = "https://066a-103-156-19-229.ngrok-free.app";
+    const URL = "https://17ed-119-161-98-68.ngrok-free.app";
 
     const [focus, setFocus] = useState(null);
     const [gender, setGender] = useState("");
@@ -29,7 +29,7 @@ export default function RegisterPatient(props) {
     const [age, setAge] = useState(null);
     const [address, setAddress] = useState("");
     const [bottom, setBottom] = useState(0);
-
+    const [patientId, setPatientId] = useState("");
     useEffect(() => {
         if (focus !== null) {
             var count = 0;
@@ -202,15 +202,16 @@ export default function RegisterPatient(props) {
                     "Authorization": key
                 },
                 body: JSON.stringify(data),
-            });
+            }).then(res => res.json());
 
             props.setLoad(false);
-            if (!response.ok) {
+
+            if (response == null) {
                 props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
             }
             else {
-                const responseData = await response.json();
-                if (responseData === true) {
+                // const responseData = await response.json();
+                if (response !== null) {
                     props.setAlert({ type: "success", msg: "Registeration Successful!" });
                     setFName("")
                     setLName("")
@@ -221,6 +222,11 @@ export default function RegisterPatient(props) {
                     setDate("")
                     setMobile("")
                     setGender("")
+                    console.log(response.patient.id)
+                    // setPatientId(response.patient.id);
+                    await AsyncStorage.setItem('patientId', response.patient.id);
+                    console.log('HELOOOOOOO ' + AsyncStorage.getItem('patientId'));
+                    props.navigate("LoggedIn Patient");
                 }
                 else {
                     props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
@@ -415,7 +421,7 @@ export default function RegisterPatient(props) {
                     </View>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={registerHandler}
+                        onPress={() => registerHandler()}
                     >
                         <Text style={styles.buttonText}>Submit</Text>
                     </TouchableOpacity>

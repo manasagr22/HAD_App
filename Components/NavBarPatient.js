@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 
-export default function NavBar(props) {
+export default function NavBarPatient(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
 
@@ -70,36 +70,39 @@ export default function NavBar(props) {
       </View>
 
       <View style={styles.navItems}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.navItem, activeIndex === 0 && styles.activeNavItem]}
           onPress={() => handlePress(0)}
           activeOpacity={1}
         >
           <Text style={[styles.navText, activeIndex === 0 && styles.activeNavText]}>Dashboard</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </TouchableOpacity> */}
+
+        {/* <TouchableOpacity
           style={[styles.navItem, activeIndex === 1 && styles.activeNavItem]}
           onPress={() => handlePress(1)}
           activeOpacity={1}
         >
           <Text style={[styles.navText, activeIndex === 1 && styles.activeNavText]}>Supervisor</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </TouchableOpacity> */}
+        {/* <TouchableOpacity
           style={[styles.navItem, activeIndex === 2 && styles.activeNavItem]}
           onPress={() => handlePress(2)}
           activeOpacity={1}
         >
           <Text style={[styles.navText, activeIndex === 2 && styles.activeNavText]}>Contact Us</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Login Patient")}>
-          <Text style={styles.buttonText}>Login Patient</Text>
+      <Text style={styles.titleText}>Hello, Patient Name</Text>
+        <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Questionnaire")}>
+          <Text style={styles.buttonText}>Take Questionnaire</Text>
         </TouchableOpacity>
+{/*         
         <TouchableOpacity style={[styles.button, styles.secondaryButton]} activeOpacity={1} onPress={() => props.navigate("Register")}>
           <Text style={styles.buttonText}>Register Patient</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity style={styles.avatarButton} onPress={toggleMenu} activeOpacity={1}>
           <Image source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80' }} style={styles.avatar} />
         </TouchableOpacity>
@@ -188,7 +191,8 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     backgroundColor: '#667EEA',
     borderRadius: 10,
-    marginHorizontal: 8,
+    marginHorizontal: 20,
+
   },
   secondaryButton: {
     backgroundColor: '#EF4444',
@@ -196,6 +200,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontWeight: 'bold',
+  },
+  titleText: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 20,
+    fontFamily: 'Helvetica'
   },
   avatarButton: {
     alignItems: 'center',

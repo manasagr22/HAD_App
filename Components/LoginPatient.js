@@ -7,8 +7,42 @@ export default function LoginPatient(props) {
     const [aabha, setAabha] = useState("");
     const [pass, setPass] = useState("");
 
-    const loginHandler = () => {
-        props.setAlert({type: "success", msg: "Login Successful!"})
+    const loginHandler = async () => {
+
+        const URL = 'https://17ed-119-161-98-68.ngrok-free.app';
+        const key = "Bearer " + props.jwtToken;
+        try {
+            const url = URL + '/fw/patientLogIn'
+            props.setLoad(true);
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": key
+                },
+                body: aabha,
+            }).then(res => res.json());
+
+            props.setLoad(false);
+            console.log(response);
+
+            if (response !== null) {
+                props.setAlert({ type: "success", msg: "Login Successful!" });
+
+                props.navigate("LoggedIn Patient");
+
+            }
+            else {
+                props.setAlert({ type: "error", msg: "Invalid Credentials", })
+            }
+
+        } catch (err) {
+            console.log(err);
+            props.setLoad(false);
+            props.setAlert({ type: "error", msg: "Some error occurred", })
+        }
+
+
 
         setTimeout(() => {
             props.setAlert(null);
@@ -37,7 +71,7 @@ export default function LoginPatient(props) {
                             }}
                         />
                     </View>
-                    <View style={styles.inputGroup}>
+                    {/* <View style={styles.inputGroup}>
                         {pass !== "" || focus === 1 ? <Text style={[styles.labelFocused, focus !== 1 && { color: "#D1D5DB" }]}>Password</Text> : undefined}
                         <TextInput
                             style={[styles.input, focus === 1 && styles.inputFocused]}
@@ -51,9 +85,9 @@ export default function LoginPatient(props) {
                                 focus === 1 ? setFocus(null) : undefined
                             }}
                         />
-                    </View>
+                    </View> */}
                     <TouchableOpacity style={styles.button} onPress={loginHandler}>
-                        <Text style={styles.buttonText}>Take Survey</Text>
+                        <Text style={styles.buttonText}>Login Patient</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -73,7 +107,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: "50%",
-        height: "57%",
+        height: "40%",
         marginBottom: 'auto',
         marginTop: 'auto',
         marginLeft: 'auto',
@@ -160,6 +194,7 @@ const styles = StyleSheet.create({
         width: "50%",
         marginLeft: 'auto',
         marginRight: "auto",
+        marginTop: 20
     },
     buttonText: {
         color: '#FFFFFF', // White
