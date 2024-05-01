@@ -452,10 +452,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 40, // Font size of "Medimate"
     fontWeight: 'bold', // Bold font weight
-    textAlign: 'center', // Center-align the text
+    textAlign: 'center',
+    fontFamily: 'Roboto' // Center-align the text
   },
   blueText: {
-    color: '#9141ac', // Blue color for "Medimate"
+    color: '#481ee4',
+    fontFamily: 'Roboto' // Blue color for "Medimate"
   },
 });
 
