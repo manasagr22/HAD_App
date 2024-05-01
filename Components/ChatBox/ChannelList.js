@@ -57,7 +57,7 @@ export default function ChannelList(props) {
                     <View style={{ flexDirection: 'column', height: "86%", justifyContent: 'center', alignItems: 'flex-start', width: "80%" }}>
                         <View style={{ flexDirection: "row", alignItems: 'center', width: "80%" }}>
                             <Text style={[styles.user, str === null && { bottom: 4.3 }]}>{props.name}</Text>
-                            {str ? getLabel(props.data.date) === "Today" ? <Text style={[styles.time, str === null && { bottom: 4.3 }]}>{extractHourMinuteAMPM(props.data.time)}</Text> : <Text style={[styles.time, str === null && { bottom: 4.3 }, getLabel(props.data.date) !== "Yesterday" && {right: 6}]}>{getLabel(props.data.date)}</Text> : undefined}
+                            {str && props.data.length !== 0 ? getLabel(props.data.date) === "Today" ? <Text style={[styles.time, str === null && { bottom: 4.3 }]}>{extractHourMinuteAMPM(props.data.time)}</Text> : <Text style={[styles.time, str === null && { bottom: 4.3 }, getLabel(props.data.date) !== "Yesterday" && {right: 6}]}>{getLabel(props.data.date)}</Text> : undefined}
                         </View>
                         <View style={{ flexDirection: "row", alignItems: 'center', width: "75%" }}>
                             {str !== null ? <Text numberOfLines={2} style={[styles.user, { color: 'gray', bottom: 6, fontFamily: 'CrimsonText-Regular', fontSize: 17, flexWrap: 'wrap', width: "95%" }]}>{str}</Text> : undefined}
