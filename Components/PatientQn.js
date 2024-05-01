@@ -49,7 +49,7 @@ const PatientQn = (props) => {
         const fetchData = async () => {
             try {
                 if (questionList.length === 0) {
-                    const URL = "https://17ed-119-161-98-68.ngrok-free.app" + "/fw/getAllQ";
+                    const URL = "https://8d6e-103-156-19-229.ngrok-free.app" + "/fw/getAllQ";
 
                     // url_get_qn.pathname = '/fw/getAllQ';
                     const params = new URLSearchParams({
@@ -113,7 +113,7 @@ const PatientQn = (props) => {
     const submitForm = async () => {
         try {
             console.log(responses);
-            const URL = "https://17ed-119-161-98-68.ngrok-free.app" + "/fw/qLogic";
+            const URL = "https://8d6e-103-156-19-229.ngrok-free.app" + "/fw/qLogic";
             const key = "Bearer " + props.jwtToken;
             const patientId = await AsyncStorage.getItem('patientId');
             console.log(patientId + ' teri maa ki chut');

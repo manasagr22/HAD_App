@@ -6,7 +6,7 @@ export default function NavBar(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
 
-  const URL = "https://17ed-119-161-98-68.ngrok-free.app";
+  const URL = "https://8d6e-103-156-19-229.ngrok-free.app";
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);

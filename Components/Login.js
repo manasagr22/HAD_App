@@ -10,7 +10,7 @@ export default function Login(props) {
     const [email, setEmail] = useState(null);
     const [pass, setPass] = useState(null);
 
-    const URL = "https://17ed-119-161-98-68.ngrok-free.app";
+    const URL = "https://8d6e-103-156-19-229.ngrok-free.app";
 
     async function signIn() {
         const url = URL + "/auth/login"

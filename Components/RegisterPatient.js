@@ -7,7 +7,7 @@ import CheckBox from '@react-native-community/checkbox';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function RegisterPatient(props) {
-    const URL = "https://17ed-119-161-98-68.ngrok-free.app";
+    const URL = "https://8d6e-103-156-19-229.ngrok-free.app";
 
     const [focus, setFocus] = useState(null);
     const [gender, setGender] = useState("");
@@ -421,7 +421,7 @@ export default function RegisterPatient(props) {
                     </View>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => registerHandler()}
+                        onPress={() => props.navigate("LoggedIn Patient")}
                     >
                         <Text style={styles.buttonText}>Submit</Text>
                     </TouchableOpacity>

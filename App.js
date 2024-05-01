@@ -43,7 +43,7 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const URL = "https://17ed-119-161-98-68.ngrok-free.app";
+  const URL = "https://8d6e-103-156-19-229.ngrok-free.app";
   // const navigation = useNavigation();
   const Stack = createNativeStackNavigator();
 
@@ -81,18 +81,18 @@ function App() {
       else {
         try {
           const key = "Bearer " + jwtToken;
-          const res = await fetch(URL+"/fw/isLoggedIn", {
+          const res = await fetch(URL + "/fw/isLoggedIn", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               "Authorization": key
             }
           })
-          if(!res.ok) {
+          if (!res.ok) {
             clear();
           }
           else {
-            if(await res.json()) {
+            if (await res.json()) {
               await storeData("/", jwtToken)
             }
             else {
@@ -149,7 +149,7 @@ function App() {
 
 const LoginFW = (props) => {
   const navigation = useNavigation();
-  const URL = "https://17ed-119-161-98-68.ngrok-free.app";
+  const URL = "https://8d6e-103-156-19-229.ngrok-free.app";
 
   async function clear() {
     await AsyncStorage.clear();
@@ -168,19 +168,19 @@ const LoginFW = (props) => {
       else {
         try {
           const key = "Bearer " + props.jwtToken;
-          const res = await fetch(URL+"/fw/isLoggedIn", {
+          const res = await fetch(URL + "/fw/isLoggedIn", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               "Authorization": key
             }
           })
-          if(!res.ok) {
+          if (!res.ok) {
             clear();
           }
           else {
             const r = await res.json();
-            if(r == true) {
+            if (r == true) {
               await props.storeData("/", props.jwtToken)
               navigation.navigate("Dashboard")
             }
@@ -219,7 +219,7 @@ const DashboardParent = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
+        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
       </View>
     </View>
   )
@@ -257,9 +257,9 @@ const Register = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
+        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
         <ScrollView ref={scrollViewRef}>
-          <RegisterPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} scrollViewRef={scrollViewRef}/>
+          <RegisterPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} scrollViewRef={scrollViewRef} />
         </ScrollView>
       </View>
     </View>
@@ -273,7 +273,7 @@ const LoginPat = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
+        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
         <ScrollView>
           <LoginPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
         </ScrollView>
@@ -312,8 +312,8 @@ const Chatting = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
-        <Chat navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible}/>
+        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <Chat navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
       </View>
     </View>
   )
@@ -344,16 +344,19 @@ const LoggedPat = (props) => {
     };
   }, []);
 
-  return(<View style={[styles.background, styles.container]}>
+  return (<View style={[styles.background, styles.container]}>
     {props.load ? <Spinner /> : undefined}
-      {props.alert ? <Alert alert={props.alert} /> : undefined}
-          <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
+    {props.alert ? <Alert alert={props.alert} /> : undefined}
+    <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height, alignItems: 'center' }}>
 
-            <NavBarPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
-              <View >
-                  <Text >Logged In </Text>
-              </View>
-          </View>
+      <NavBarPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+
+      <View style={styles.boxcontainer}>
+        <Text style={styles.welcomeText}>Welcome to</Text>
+        <Text style={[styles.title, styles.blueText]}>Medimate</Text>
+      </View>
+      
+    </View>
   </View>)
 }
 
@@ -382,22 +385,22 @@ const PatientQuesn = (props) => {
     };
   }, []);
 
-  return(
+  return (
     <View style={[styles.background, styles.container]}>
 
-        <NavBarPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken}/>
+      <NavBarPatient navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
 
 
-        {props.load ? <Spinner /> : undefined}
+      {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
 
-          <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-              <PatientQn navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
+      <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
+        <PatientQn navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
 
-          </View>
-  
+      </View>
 
-        
+
+
     </View>
   )
 }
@@ -420,6 +423,36 @@ const styles = StyleSheet.create({
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0, 0, 0, 0.75)', // Adjust opacity as needed
+  },
+  boxcontainer: {
+    marginTop: '10%',
+    height: '30%',
+    width: '40%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF', // Background color of the box
+    borderRadius: 10, // Rounded corners
+    padding: 10, // Padding around the content
+    shadowColor: '#000000', // Shadow color
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25, // Shadow opacity
+    shadowRadius: 4, // Shadow radius
+    elevation: 5, // Android shadow
+  },
+  welcomeText: {
+    fontSize: 48, // Font size of "Welcome to"
+    textAlign: 'center', // Center-align the text
+  },
+  title: {
+    fontSize: 40, // Font size of "Medimate"
+    fontWeight: 'bold', // Bold font weight
+    textAlign: 'center', // Center-align the text
+  },
+  blueText: {
+    color: '#9141ac', // Blue color for "Medimate"
   },
 });
 
