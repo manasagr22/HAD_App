@@ -5,12 +5,21 @@ import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } fro
 export default function NavBarPatient(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
-
+  const [patientName, setPatientName] = useState("");
   const URL = "https://8d6e-103-156-19-229.ngrok-free.app";
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
+
+  useEffect(() => {
+    const fetchName = async () => {
+      const patientName = await AsyncStorage.getItem('patientName');
+      setPatientName(patientName)
+    }
+
+    fetchName()
+  }, []);
 
   const handlePress = (index) => {
     setActiveIndex(index);
@@ -95,7 +104,7 @@ export default function NavBarPatient(props) {
       </View>
 
       <View style={styles.buttonsContainer}>
-      <Text style={styles.titleText}>Hello, Patient Name</Text>
+      <Text style={styles.titleText}>Hello, {patientName}</Text>
         <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Questionnaire")}>
           <Text style={styles.buttonText}>Take Questionnaire</Text>
         </TouchableOpacity>

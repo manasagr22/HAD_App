@@ -116,6 +116,7 @@ const PatientQn = (props) => {
             const URL = "https://8d6e-103-156-19-229.ngrok-free.app" + "/fw/qLogic";
             const key = "Bearer " + props.jwtToken;
             const patientId = await AsyncStorage.getItem('patientId');
+
             console.log(patientId + ' teri maa ki chut');
             const response = await fetch(URL, {
                 method: "POST",
@@ -124,13 +125,13 @@ const PatientQn = (props) => {
                     Authorization: key,
                 },
                 body: JSON.stringify({
-                    pid: patientId,
+                    pid: parseInt(patientId),
                     qnName: 'adminQuestionnaire',
                     answers: responses
                 }),
 
             })
-            console.log(response)
+            console.log(await response.text())
             props.setAlert({ type: "success", msg: "Form Submitted Successfully" });
             
         } catch (err) {

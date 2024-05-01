@@ -222,9 +222,11 @@ export default function RegisterPatient(props) {
                     setDate("")
                     setMobile("")
                     setGender("")
-                    console.log(response.patient.id)
+                    // console.log(response.patient.id)
                     // setPatientId(response.patient.id);
-                    await AsyncStorage.setItem('patientId', response.patient.id);
+                    await AsyncStorage.setItem('patientId', response.publicId.toString());
+                    await AsyncStorage.setItem('patientName', response.firstName);
+
                     console.log('HELOOOOOOO ' + AsyncStorage.getItem('patientId'));
                     props.navigate("LoggedIn Patient");
                 }
@@ -421,7 +423,7 @@ export default function RegisterPatient(props) {
                     </View>
                     <TouchableOpacity
                         style={styles.button}
-                        onPress={() => props.navigate("LoggedIn Patient")}
+                        onPress={() => registerHandler()}
                     >
                         <Text style={styles.buttonText}>Submit</Text>
                     </TouchableOpacity>
