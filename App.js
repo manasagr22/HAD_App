@@ -114,15 +114,18 @@ function App() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name='Chat'>
+                {() => <Chatting load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+              </Stack.Screen>
               <Stack.Screen name="Login">
                 {() => <LoginFW load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} setJwtToken={setJwtToken} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
               <Stack.Screen name="Dashboard">
                 {() => <DashboardParent load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
-              <Stack.Screen name='Chat'>
+              {/* <Stack.Screen name='Chat'>
                 {() => <Chatting load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
-              </Stack.Screen>
+              </Stack.Screen> */}
               <Stack.Screen name='Register'>
                 {() => <Register load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>

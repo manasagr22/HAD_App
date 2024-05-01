@@ -12,7 +12,7 @@ export default function LoginPatient(props) {
 
         setTimeout(() => {
             props.setAlert(null);
-        }, 1800);
+        }, 1800)
         // navigate('/fw/loggedInPatient', {replace: true});
     }
 
@@ -26,7 +26,6 @@ export default function LoginPatient(props) {
                         {aabha !== "" || focus === 0 ? <Text style={[styles.labelFocused, focus !== 0 && { color: "#D1D5DB" }]}>AABHA ID</Text> : undefined}
                         <TextInput
                             style={[styles.input, focus === 0 && styles.inputFocused]}
-                            placeholder="AABHA ID"
                             keyboardType="numeric"
                             value={aabha}
                             onChangeText={(val) => setAabha(val)}
@@ -41,7 +40,6 @@ export default function LoginPatient(props) {
                         {pass !== "" || focus === 1 ? <Text style={[styles.labelFocused, focus !== 1 && { color: "#D1D5DB" }]}>Password</Text> : undefined}
                         <TextInput
                             style={[styles.input, focus === 1 && styles.inputFocused]}
-                            placeholder="Password"
                             secureTextEntry={true}
                             value={pass}
                             onChangeText={(val) => setPass(val)}

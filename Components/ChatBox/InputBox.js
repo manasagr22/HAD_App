@@ -92,12 +92,6 @@ export default function InputBox(props) {
 
         setSearchText("");
         props.setCountMessages(props.countMessages + 1);
-        // if(props.flatListRef.current) {
-        //     const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + 2000)
-        //     props.flatListRef.current.scrollToOffset({ animated: false, offset: offset })
-        // }
-
-        // props.isKeyboardVisible ? props.flatListRef.current.scrollToEnd({ animated: false }) : props.flatListRef.current.scrollToOffset({ animated: false, offset: 0 })
     }
 
     return (
