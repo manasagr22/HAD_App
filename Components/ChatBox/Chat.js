@@ -9,9 +9,9 @@ import ChannelList from './ChannelList';
 import UserTitle from './UserTitle';
 import InputBox from './InputBox';
 import MessageBox from './MessageBox';
-import SockJS from "sockjs-client";
+// import SockJS from "sockjs-client";
 // import { Client } from "@stomp/stompjs";
-import Stomp from "webstomp-client";
+// import Stomp from "webstomp-client";
 import io from 'socket.io-client';
 
 export default function Chat(props) {
@@ -29,9 +29,10 @@ export default function Chat(props) {
   const [message, setMessage] = useState(null);
   const [senderEmail, setSenderEmail] = useState(null);
 
-  const SOCKET_URL = props.URL + "/ws-message";
-  // const Client = Stomp.client(`ws://${SOCKET_URL});
-  console.log(SOCKET_URL)
+  // const SOCKET_URL = props.URL + "/ws-message";
+  // // const Client = Stomp.client(`ws://${SOCKET_URL});
+  // console.log(SOCKET_URL)
+  const SOCKET_URL = "https://50c6-119-161-98-68.ngrok-free.app"
 
   useEffect(() => {
     async function connectSocket() {
@@ -42,18 +43,22 @@ export default function Chat(props) {
       console.log(email)
 
       console.log(SOCKET_URL)
-      const socket = io(SOCKET_URL); // Replace with your server address
+      const s = io(SOCKET_URL, {
+        reconnection: false,
+        query: `email=${email}&room=ChatRoom`, //"room=" + room+",username="+username,
+      });
+      setClient(s)
     
-    socket.on('connect', () => {
-      console.log('Connected to server');
+    s.on('connect', () => {
+      console.log('Connected!');
     });
 
-    socket.on('/user/topic/private-messages', (data) => {
+    s.on('read_message', (data) => {
       console.log('Received message:', data);
     });
 
     return () => {
-      socket.disconnect();
+      s.disconnect();
     };
 
       // const socket1 = new SockJS(SOCKET_URL + `?email=${email}`);
@@ -222,11 +227,13 @@ export default function Chat(props) {
   useEffect(() => {
     async function sendPrivateMessage(text, to, date, time, name) {
       console.log(client);
-      if (client && client.connected) {
+      if (client) {
         console.log(text, to);
-        client.send({
-          destination: "/ws/private-message",
-          body: JSON.stringify({ messageContent: text, to: to, date: date, time: time }),
+        client.emit("send_message", {
+          messageContent: text, 
+          to: to, 
+          date: date, 
+          time: time,
         });
 
         const newMessage = {
