@@ -70,7 +70,9 @@ export default function NavBar(props) {
       <View style={styles.navItems}>
         <TouchableOpacity
           style={[styles.navItem, activeIndex === 0 && styles.activeNavItem]}
-          onPress={() => handlePress(0)}
+          onPress={() => {
+            props.navigate("Dashboard")
+            handlePress(0)}}
           activeOpacity={1}
         >
           <Text style={[styles.navText, activeIndex === 0 && styles.activeNavText]}>Dashboard</Text>
@@ -117,6 +119,11 @@ export default function NavBar(props) {
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>Inbox</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.menuItem} activeOpacity={1} onPress={() => {
+              handlePress(5)
+              props.navigate("Chat")}}>
+              <Text style={styles.menuItemText}>Chat</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>Help</Text>

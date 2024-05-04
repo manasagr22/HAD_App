@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Image, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { Ionicons } from '@expo/vector-icons';
-import ChatData from './ChatData.json';
 
 export default function ChannelList(props) {
     const [str, setStr] = useState(props.data.length === 0 ? null : props.data.msg)

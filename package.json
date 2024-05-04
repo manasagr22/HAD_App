@@ -41,10 +41,14 @@
     "react-native-safe-area-context": "^4.9.0",
     "react-native-screens": "^3.31.1",
     "react-native-share": "^10.2.0",
+    "react-native-socketio": "^0.3.0",
+    "react-native-stomp-websocket": "^1.0.8",
     "react-native-svg": "^15.2.0",
     "react-native-video": "^5.2.1",
+    "socket.io-client": "^4.7.5",
     "sockjs-client": "^1.6.1",
-    "stream-chat-react-native": "^5.28.0"
+    "stream-chat-react-native": "^5.28.0",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

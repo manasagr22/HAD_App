@@ -43,7 +43,7 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [URL, setURL] = useState("https://523e-103-156-19-229.ngrok-free.app");
+  const [URLMain, setURL] = useState("https://2fe5-103-156-19-229.ngrok-free.app");
   // const navigation = useNavigation();
   const Stack = createNativeStackNavigator();
 
@@ -81,7 +81,7 @@ function App() {
       else {
         try {
           const key = "Bearer " + jwtToken;
-          const res = await fetch(URL + "/fw/isLoggedIn", {
+          const res = await fetch(URLMain + "/fw/isLoggedIn", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -116,31 +116,31 @@ function App() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name='Chat'>
+            {/* <Stack.Screen name='Chat'>
                 {() => <Chatting URL={URL} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
-              </Stack.Screen>
+              </Stack.Screen> */}
               <Stack.Screen name="Login">
-                {() => <LoginFW URL={URL} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} setJwtToken={setJwtToken} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <LoginFW URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} setJwtToken={setJwtToken} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
               <Stack.Screen name="Dashboard">
-                {() => <DashboardParent URL={URL} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <DashboardParent URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
-              {/* <Stack.Screen name='Chat'>
-                {() => <Chatting load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
-              </Stack.Screen> */}
+              <Stack.Screen name='Chat'>
+                {() => <Chatting URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+              </Stack.Screen>
               <Stack.Screen name='Register'>
-                {() => <Register URL={URL} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <Register URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
               <Stack.Screen name='Login Patient'>
-                {() => <LoginPat URL={URL} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <LoginPat URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
 
               <Stack.Screen name='Patient Questionnaire'>
-                {() => <PatientQuesn URL={URL} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <PatientQuesn URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
 
               <Stack.Screen name='LoggedIn Patient'>
-                {() => <LoggedPat URL={URL} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <LoggedPat URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
             </Stack.Navigator>
           </NavigationContainer>
@@ -170,7 +170,7 @@ const LoginFW = (props) => {
       else {
         try {
           const key = "Bearer " + props.jwtToken;
-          const res = await fetch(URL + "/fw/isLoggedIn", {
+          const res = await fetch(props.URL + "/fw/isLoggedIn", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -187,7 +187,7 @@ const LoginFW = (props) => {
               navigation.navigate("Dashboard")
             }
             else {
-              clear();
+              await clear();
             }
           }
         }

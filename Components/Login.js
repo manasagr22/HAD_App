@@ -35,9 +35,9 @@ export default function Login(props) {
                 const result = await res.json();
                 if (result.role === "FIELDWORKER") {
                     props.setAlert({ type: "success", msg: "Login Successful!!!" });
-                    props.storeData("user", result.username)
-                    props.storeData("role", result.role)
-                    props.storeData("email", email)
+                    await props.storeData("user", result.username)
+                    await props.storeData("role", result.role)
+                    await props.storeData("email", email)
                     setEmail("")
                     setPass("")
                     props.setJwtToken(result.jwtToken);

@@ -10,7 +10,9 @@ import UserTitle from './UserTitle';
 import InputBox from './InputBox';
 import MessageBox from './MessageBox';
 import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
+// import { Client } from "@stomp/stompjs";
+import Stomp from "webstomp-client";
+import io from 'socket.io-client';
 
 export default function Chat(props) {
   const [data, setData] = useState(null);
@@ -25,56 +27,78 @@ export default function Chat(props) {
   const sendMessageSpecificRef = useRef();
   const [client, setClient] = useState(null);
   const [message, setMessage] = useState(null);
+  const [senderEmail, setSenderEmail] = useState(null);
 
   const SOCKET_URL = props.URL + "/ws-message";
+  // const Client = Stomp.client(`ws://${SOCKET_URL});
+  console.log(SOCKET_URL)
 
   useEffect(() => {
-    const email = props.getData("email")
-    if (!email)
-      navigate("/");
-    console.log(email)
+    async function connectSocket() {
+      const email = await props.getData("email")
+      setSenderEmail(email);
+      if (!email)
+        props.navigate("Dashboard");
+      console.log(email)
 
-    const socket1 = new SockJS(SOCKET_URL + `?email=${email}`);
-    const stompClient = new Client({
-      webSocketFactory: () => socket1,
-      onConnect: () => {
-        console.log("Connected 1!!");
-        stompClient.subscribe('/user/topic/private-messages', function (message) {
-          const msg = JSON.parse(message.body)
-          const newMessage = {
-            id: message.message.to,
-            name: user.name,
-            data: {
-              id: message.from,
-              msg: message.message.messageContent,
-              date: message.message.date,
-              time: message.message.time
-            }
-          };
-          updateReceiverMessage(newMessage);
-        });
-      },
-      onDisconnect: () => {
-        console.log("Disconnected 1!");
-      },
+      console.log(SOCKET_URL)
+      const socket = io(SOCKET_URL); // Replace with your server address
+    
+    socket.on('connect', () => {
+      console.log('Connected to server');
     });
 
-    stompClient.activate();
-    setClient(stompClient);
+    socket.on('/user/topic/private-messages', (data) => {
+      console.log('Received message:', data);
+    });
 
     return () => {
-      if (stompClient) {
-        stompClient.deactivate();
-        setClient(null);
-      }
+      socket.disconnect();
     };
+
+      // const socket1 = new SockJS(SOCKET_URL + `?email=${email}`);
+      // const stompClient = Stomp.over(socket1);
+      
+      // stompClient.connect(
+      //   {},
+      //   frame => {
+      //     console.log('Connected!')
+      //     stompClient.subscribe("/user/topic/private-messages", message => {
+      //       console.log("received)")
+      //       const msg = JSON.parse(message.body)
+      //       console.log(msg)
+      //       const newMessage = {
+      //         id: message.message.to,
+      //         name: user.name,
+      //         data: {
+      //           id: message.from,
+      //           msg: message.message.messageContent,
+      //           date: message.message.date,
+      //           time: message.message.time
+      //         }
+      //       };
+      //       updateReceiverMessage(newMessage);
+      //     });
+      //   },
+      //   error => {
+      //     console.log(error);
+      //   }
+      // );
+      // setClient(stompClient);
+      // return () => {
+      //   stompClient.disconnect(() => {
+      //     console.log('Disconnected!');
+      //   });
+      // };
+    }
+    connectSocket();
   }, [])
 
   const updateReceiverMessage = (message) => {
     const conversationIndex = data ? data.findIndex((conversation) => conversation.id === message.id) : -1;
 
     // If the conversation exists in the data array
-    if(conversationIndex !== -1) {
+    if (conversationIndex !== -1) {
       // Update the data array with the latest message
       setData((prevData) => {
         const newData = [...prevData]; // Create a shallow copy of the data array
@@ -83,325 +107,325 @@ export default function Chat(props) {
         newData[conversationIndex].data = message.data; // Update the data of the conversation
         return newData;
       });
-} else {
-  // If the conversation does not exist in the data array, add it as a new conversation
-  const temp = data;
-  temp ? setData((prevData) => [
-    ...prevData,
-    {
-      id: message.id,
-      name: message.name,
-      data: message.data
-    }
-  ]) : setData([{
-    id: message.id,
-    name: message.name,
-    data: message.data
-  }])
-
-  temp ? setConstData((prevData) => [
-    ...prevData,
-    {
-      id: message.id,
-      name: message.name,
-      data: message.data
-    }
-  ]) : setConstData([{
-    id: message.id,
-    name: message.name,
-    data: message.data
-  }])
-}
-
-const date = message.data.date;
-  const time = message.data.time;
-  var key = 0;
-
-        for (const d in chatData) {
-            key += chatData[d].length
+    } else {
+      // If the conversation does not exist in the data array, add it as a new conversation
+      const temp = data;
+      temp ? setData((prevData) => [
+        ...prevData,
+        {
+          id: message.id,
+          name: message.name,
+          data: message.data
         }
-  const newMessage = {
-    key: String(key + 1),
-    id: message.data.id,
-    data: message.data.msg,
-    time: time
-}
+      ]) : setData([{
+        id: message.id,
+        name: message.name,
+        data: message.data
+      }])
 
-  try {
-    if (chatData[date]) {
+      temp ? setConstData((prevData) => [
+        ...prevData,
+        {
+          id: message.id,
+          name: message.name,
+          data: message.data
+        }
+      ]) : setConstData([{
+        id: message.id,
+        name: message.name,
+        data: message.data
+      }])
+    }
+
+    const date = message.data.date;
+    const time = message.data.time;
+    var key = 0;
+
+    for (const d in chatData) {
+      key += chatData[d].length
+    }
+    const newMessage = {
+      key: String(key + 1),
+      id: message.data.id,
+      data: message.data.msg,
+      time: time
+    }
+
+    try {
+      if (chatData[date]) {
         // If the date exists, push the newMessage object into the array
         props.setChatData(prevChatData => ({
-            ...prevChatData,
-            [date]: [...prevChatData[date], newMessage]
+          ...prevChatData,
+          [date]: [...prevChatData[date], newMessage]
         }));
-    } else {
+      } else {
         // If the date doesn't exist, create a new key-value pair with the new date and initialize it with an array containing the newMessage object
         props.setChatData(prevChatData => ({
-            ...prevChatData,
-            [date]: [newMessage]
+          ...prevChatData,
+          [date]: [newMessage]
         }));
+      }
     }
-}
-catch {
-    props.setChatData(prevChatData => ({
+    catch {
+      props.setChatData(prevChatData => ({
         ...prevChatData,
         [date]: [newMessage]
-    }));
-}
-}
-
-const updateDataWithMessage = (message) => {
-  // Find the index of the conversation in the data array based on the receiver's email
-  const conversationIndex = data ? data.findIndex((conversation) => conversation.id === message.id) : -1;
-
-  // If the conversation exists in the data array
-  if (conversationIndex !== -1) {
-    // Update the data array with the latest message
-    setData((prevData) => {
-      const newData = [...prevData]; // Create a shallow copy of the data array
-      console.log(newData)
-      console.log(newData[conversationIndex])
-      newData[conversationIndex].data = message.data; // Update the data of the conversation
-      return newData;
-    });
-  } else {
-    // If the conversation does not exist in the data array, add it as a new conversation
-    const temp = data;
-    temp ? setData((prevData) => [
-      ...prevData,
-      {
-        id: message.id,
-        name: message.name,
-        data: message.data
-      }
-    ]) : setData([{
-      id: message.id,
-      name: message.name,
-      data: message.data
-    }])
-
-    temp ? setConstData((prevData) => [
-      ...prevData,
-      {
-        id: message.id,
-        name: message.name,
-        data: message.data
-      }
-    ]) : setConstData([{
-      id: message.id,
-      name: message.name,
-      data: message.data
-    }])
-  }
-};
-
-useEffect(() => {
-  async function sendPrivateMessage(text, to, date, time, name) {
-    console.log(client);
-    if (client && client.connected) {
-      console.log(text, to);
-      client.publish({
-        destination: "/ws/private-message",
-        body: JSON.stringify({ messageContent: text, to: to, date: date, time: time }),
-      });
-
-      const newMessage = {
-        id: to,
-        name: name,
-        data: {
-          id: props.getData("email"),
-          msg: text,
-          date: date,
-          time: time
-        }
-      }
-
-      updateDataWithMessage(newMessage);
-
-    } else {
-      props.handleAlert("danger", "Server Error Occurred!")
+      }));
     }
   }
-  sendMessageSpecificRef.current = sendPrivateMessage;
-}, [client])
 
-useEffect(() => {
-  // console.log(props.isKeyboardVisible);
-  ;
-}, [props.isKeyboardVisible])
+  const updateDataWithMessage = (message) => {
+    // Find the index of the conversation in the data array based on the receiver's email
+    const conversationIndex = data ? data.findIndex((conversation) => conversation.id === message.id) : -1;
 
-useEffect(() => {
+    // If the conversation exists in the data array
+    if (conversationIndex !== -1) {
+      // Update the data array with the latest message
+      setData((prevData) => {
+        const newData = [...prevData]; // Create a shallow copy of the data array
+        console.log(newData)
+        console.log(newData[conversationIndex])
+        newData[conversationIndex].data = message.data; // Update the data of the conversation
+        return newData;
+      });
+    } else {
+      // If the conversation does not exist in the data array, add it as a new conversation
+      const temp = data;
+      temp ? setData((prevData) => [
+        ...prevData,
+        {
+          id: message.id,
+          name: message.name,
+          data: message.data
+        }
+      ]) : setData([{
+        id: message.id,
+        name: message.name,
+        data: message.data
+      }])
+
+      temp ? setConstData((prevData) => [
+        ...prevData,
+        {
+          id: message.id,
+          name: message.name,
+          data: message.data
+        }
+      ]) : setConstData([{
+        id: message.id,
+        name: message.name,
+        data: message.data
+      }])
+    }
+  };
+
+  useEffect(() => {
+    async function sendPrivateMessage(text, to, date, time, name) {
+      console.log(client);
+      if (client && client.connected) {
+        console.log(text, to);
+        client.send({
+          destination: "/ws/private-message",
+          body: JSON.stringify({ messageContent: text, to: to, date: date, time: time }),
+        });
+
+        const newMessage = {
+          id: to,
+          name: name,
+          data: {
+            id: senderEmail,
+            msg: text,
+            date: date,
+            time: time
+          }
+        }
+
+        updateDataWithMessage(newMessage);
+
+      } else {
+        props.handleAlert("danger", "Server Error Occurred!")
+      }
+    }
+    sendMessageSpecificRef.current = sendPrivateMessage;
+  }, [client])
+
+  useEffect(() => {
+    // console.log(props.isKeyboardVisible);
+    ;
+  }, [props.isKeyboardVisible])
+
+  useEffect(() => {
+    function getCorrectDate(date) {
+      const parts = date.split("/");
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+    function getChatDataWithLabels() {
+      const today = new Date();
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+
+      const processedData = [];
+
+      for (const date in chatData) {
+        const messageDate = new Date(getCorrectDate(date));
+
+        let dateLabel;
+        if (messageDate.toDateString() === today.toDateString()) {
+          dateLabel = "Today";
+        } else if (messageDate.toDateString() === yesterday.toDateString()) {
+          dateLabel = "Yesterday";
+        } else {
+          dateLabel = date;
+        }
+
+        processedData.push({
+          dateLabel: dateLabel,
+          messages: chatData[date]
+        });
+      }
+
+      return processedData;
+    }
+    if (chatData && user) {
+      setChatDataWithLabels(getChatDataWithLabels(chatData));
+    }
+  }, [chatData, user])
+
+  const options = {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+    timeZone: 'Asia/Kolkata'
+  };
+
+  const indianTime = new Date().toLocaleTimeString('en-US', options);
+
+  useEffect(() => {
+    if (topPadding === null && Data !== null) {
+      const len = Data.length;
+      setTopPadding((len / 6.5) * 14);
+    }
+  }, [Data, topPadding])
+
+  useEffect(() => {
+    if (searchText !== null && searchText !== "") {
+      const list = [];
+      Data.forEach((item) => {
+        if (item.name.startsWith(searchText))
+          list.push(item)
+      })
+      setData(list);
+    }
+    else {
+      setData(Data);
+    }
+  }, [searchText])
+
+  useEffect(() => {
+    if (chatDataWithLabels !== null) {
+      if (flatListRef.current) {
+        // console.log(props.isKeyboardVisible)
+        const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
+        flatListRef.current.scrollToOffset({ animated: false, offset: offset })
+        // flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+        // props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
+      }
+    }
+  }, [chatDataWithLabels, countMessages]);
+
   function getCorrectDate(date) {
     const parts = date.split("/");
     return `${parts[2]}-${parts[1]}-${parts[0]}`;
   }
 
-  function getChatDataWithLabels() {
+  function getLabel(date) {
     const today = new Date();
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
 
-    const processedData = [];
+    const messageDate = new Date(getCorrectDate(date));
 
-    for (const date in chatData) {
-      const messageDate = new Date(getCorrectDate(date));
-
-      let dateLabel;
-      if (messageDate.toDateString() === today.toDateString()) {
-        dateLabel = "Today";
-      } else if (messageDate.toDateString() === yesterday.toDateString()) {
-        dateLabel = "Yesterday";
-      } else {
-        dateLabel = date;
-      }
-
-      processedData.push({
-        dateLabel: dateLabel,
-        messages: chatData[date]
-      });
+    let dateLabel;
+    if (messageDate.toDateString() === today.toDateString()) {
+      dateLabel = "Today";
+    } else if (messageDate.toDateString() === yesterday.toDateString()) {
+      dateLabel = "Yesterday";
+    } else {
+      dateLabel = date;
     }
 
-    return processedData;
-  }
-  if (chatData && user) {
-    setChatDataWithLabels(getChatDataWithLabels(chatData));
-  }
-}, [chatData, user])
-
-const options = {
-  hour: 'numeric',
-  minute: 'numeric',
-  hour12: true,
-  timeZone: 'Asia/Kolkata'
-};
-
-const indianTime = new Date().toLocaleTimeString('en-US', options);
-
-useEffect(() => {
-  if (topPadding === null && Data !== null) {
-    const len = Data.length;
-    setTopPadding((len / 6.5) * 14);
-  }
-}, [Data, topPadding])
-
-useEffect(() => {
-  if (searchText !== null && searchText !== "") {
-    const list = [];
-    Data.forEach((item) => {
-      if (item.name.startsWith(searchText))
-        list.push(item)
-    })
-    setData(list);
-  }
-  else {
-    setData(Data);
-  }
-}, [searchText])
-
-useEffect(() => {
-  if (chatDataWithLabels !== null) {
-    if (flatListRef.current) {
-      // console.log(props.isKeyboardVisible)
-      const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
-      flatListRef.current.scrollToOffset({ animated: false, offset: offset })
-      // flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
-      // props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
-    }
-  }
-}, [chatDataWithLabels, countMessages]);
-
-function getCorrectDate(date) {
-  const parts = date.split("/");
-  return `${parts[2]}-${parts[1]}-${parts[0]}`;
-}
-
-function getLabel(date) {
-  const today = new Date();
-  const yesterday = new Date(today);
-  yesterday.setDate(today.getDate() - 1);
-
-  const messageDate = new Date(getCorrectDate(date));
-
-  let dateLabel;
-  if (messageDate.toDateString() === today.toDateString()) {
-    dateLabel = "Today";
-  } else if (messageDate.toDateString() === yesterday.toDateString()) {
-    dateLabel = "Yesterday";
-  } else {
-    dateLabel = date;
+    return dateLabel;
   }
 
-  return dateLabel;
-}
-
-return (
-  <KeyboardAvoidingView style={{ flex: 1 }}
-    keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
-    <View style={styles.mainContainer}>
-      <View style={styles.leftView}>
-        <View style={styles.topView}>
-          <View style={styles.avatarView}>
-            <Image source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80' }} style={styles.avatar} />
-            <View style={{ height: "80%", marginTop: "auto", marginBottom: "auto" }}>
-              <Text style={[styles.user, { height: "50%", top: 2 }]}>Manas Agrawal</Text>
-              <Text style={[styles.user, { color: 'black', fontFamily: 'CrimsonText-Regular', fontSize: 19, bottom: 3 }]}>Area: Indore</Text>
-            </View>
-          </View>
-          <FontAwesome6 name="edit" size={25} style={styles.icon} />
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Search"
-            placeholderTextColor="gray"
-            value={searchText}
-            onChangeText={(val) => setSearchText(val)}
-          />
-          <EvilIcons name="search" size={24} color="gray" style={styles.iconSearch} />
-        </View>
-        <View style={styles.channelContainer}>
-          {topPadding && data ? <FlatList data={data} contentContainerStyle={{ justifyContent: 'space-evenly', paddingTop: topPadding - 30, paddingBottom: 0 }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
-            <ChannelList key={item.id} name={item.name} data={item.data} senderId={props.getData("email")} index={item.id} setChatData={setChatData} setUser={setUser} jwtToken={props.jwtToken} />
-          )}
-          /> : undefined}
-        </View>
-      </View>
-      {(props.isKeyboardVisible[0] && props.isKeyboardVisible[1] !== 0) || (!props.isKeyboardVisible[0] && props.isKeyboardVisible[1] === 0) ? <View style={styles.rightView}>
-        {user ? <View style={styles.topView1}>
-          <UserTitle name={user.name} />
-        </View> : undefined}
-        {user ? <View style={styles.bottomContainer}>
-          <View style={[styles.bottomContainer1, { height: Dimensions.get('window').height - (90 + 80 + 70 + props.isKeyboardVisible[1]) }]}>
-            {chatDataWithLabels ? <FlatList ref={flatListRef} data={props.isKeyboardVisible ? chatDataWithLabels : chatDataWithLabels.reverse()} inverted={props.isKeyboardVisible ? false : true} contentContainerStyle={{ justifyContent: 'space-evenly' }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
-              <View>
-                <View style={styles.dateSeparator}>
-                  <Text style={styles.dateSeparatorText}>{getLabel(item.dateLabel)}</Text>
-                </View>
-                <FlatList data={props.isKeyboardVisible ? item.messages : item.messages.reverse()} inverted={props.isKeyboardVisible ? false : true} contentContainerStyle={{ justifyContent: 'space-evenly', paddingBottom: 0 }} style={{ flexGrow: 1 }} renderItem={({ item: message }) => (
-                  <MessageBox senderId={message.id} userId={user.email} data={message.data} time={message.time} keyItem={message.key} />
-                )} />
+  return (
+    <KeyboardAvoidingView style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}>
+      <View style={styles.mainContainer}>
+        <View style={styles.leftView}>
+          <View style={styles.topView}>
+            <View style={styles.avatarView}>
+              <Image source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80' }} style={styles.avatar} />
+              <View style={{ height: "80%", marginTop: "auto", marginBottom: "auto" }}>
+                <Text style={[styles.user, { height: "50%", top: 2 }]}>Manas Agrawal</Text>
+                <Text style={[styles.user, { color: 'black', fontFamily: 'CrimsonText-Regular', fontSize: 19, bottom: 3 }]}>Area: Indore</Text>
               </View>
+            </View>
+            <FontAwesome6 name="edit" size={25} style={styles.icon} />
+          </View>
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              placeholder="Search"
+              placeholderTextColor="gray"
+              value={searchText}
+              onChangeText={(val) => setSearchText(val)}
+            />
+            <EvilIcons name="search" size={24} color="gray" style={styles.iconSearch} />
+          </View>
+          <View style={styles.channelContainer}>
+            {topPadding && data ? <FlatList data={data} contentContainerStyle={{ justifyContent: 'space-evenly', paddingTop: topPadding - 30, paddingBottom: 0 }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
+              <ChannelList key={item.id} name={item.name} data={item.data} senderId={senderEmail} index={item.id} setChatData={setChatData} setUser={setUser} jwtToken={props.jwtToken} />
             )}
-              onContentSizeChange={() => {
-                const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
-                flatListRef.current.scrollToOffset({ animated: false, offset: offset })
-              }}
-              onLayout={() => {
-                const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
-                flatListRef.current.scrollToOffset({ animated: false, offset: offset })
-              }}
-            // onContentSizeChange={() => props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 })}
-            // onLayout={() => props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 })}
             /> : undefined}
           </View>
-          <View style={[styles.bottomContainer2, { marginBottom: props.isKeyboardVisible[1] }]}>
-            <InputBox countMessages={countMessages} setCountMessages={setCountMessages} isKeyboardVisible={props.isKeyboardVisible} setChatData={setChatData} chatData={chatData} flatListRef={flatListRef} sendMessageSocket={sendMessageSpecificRef.current} email={user.id} senderId={props.getData("email")} client={client} name={user.name} />
-          </View>
+        </View>
+        {(props.isKeyboardVisible[0] && props.isKeyboardVisible[1] !== 0) || (!props.isKeyboardVisible[0] && props.isKeyboardVisible[1] === 0) ? <View style={styles.rightView}>
+          {user ? <View style={styles.topView1}>
+            <UserTitle name={user.name} />
+          </View> : undefined}
+          {user ? <View style={styles.bottomContainer}>
+            <View style={[styles.bottomContainer1, { height: Dimensions.get('window').height - (90 + 80 + 70 + props.isKeyboardVisible[1]) }]}>
+              {chatDataWithLabels ? <FlatList ref={flatListRef} data={props.isKeyboardVisible ? chatDataWithLabels : chatDataWithLabels.reverse()} inverted={props.isKeyboardVisible ? false : true} contentContainerStyle={{ justifyContent: 'space-evenly' }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
+                <View>
+                  <View style={styles.dateSeparator}>
+                    <Text style={styles.dateSeparatorText}>{getLabel(item.dateLabel)}</Text>
+                  </View>
+                  <FlatList data={props.isKeyboardVisible ? item.messages : item.messages.reverse()} inverted={props.isKeyboardVisible ? false : true} contentContainerStyle={{ justifyContent: 'space-evenly', paddingBottom: 0 }} style={{ flexGrow: 1 }} renderItem={({ item: message }) => (
+                    <MessageBox senderId={message.id} userId={user.email} data={message.data} time={message.time} keyItem={message.key} />
+                  )} />
+                </View>
+              )}
+                onContentSizeChange={() => {
+                  const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
+                  flatListRef.current.scrollToOffset({ animated: false, offset: offset })
+                }}
+                onLayout={() => {
+                  const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
+                  flatListRef.current.scrollToOffset({ animated: false, offset: offset })
+                }}
+              // onContentSizeChange={() => props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 })}
+              // onLayout={() => props.isKeyboardVisible ? flatListRef.current.scrollToEnd({ animated: false }) : flatListRef.current.scrollToOffset({ animated: false, offset: 0 })}
+              /> : undefined}
+            </View>
+            <View style={[styles.bottomContainer2, { marginBottom: props.isKeyboardVisible[1] }]}>
+              <InputBox countMessages={countMessages} setCountMessages={setCountMessages} isKeyboardVisible={props.isKeyboardVisible} setChatData={setChatData} chatData={chatData} flatListRef={flatListRef} sendMessageSocket={sendMessageSpecificRef.current} email={user.id} senderId={senderEmail} client={client} name={user.name} />
+            </View>
+          </View> : undefined}
         </View> : undefined}
-      </View> : undefined}
-    </View>
-  </KeyboardAvoidingView>
-)
+      </View>
+    </KeyboardAvoidingView>
+  )
 }
 
 const styles = StyleSheet.create({
