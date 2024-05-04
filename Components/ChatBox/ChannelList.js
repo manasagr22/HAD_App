@@ -6,6 +6,9 @@ import ChatData from './ChatData.json';
 export default function ChannelList(props) {
     const [str, setStr] = useState(props.data.length === 0 ? null : props.data.msg)
 
+    useEffect(() => {
+        setStr(props.data.msg)
+    }, [props.data.msg])
 
         function getCorrectDate(date) {
           const parts = date.split("/");
@@ -43,10 +46,20 @@ export default function ChannelList(props) {
         return extractedTime;
     }
 
-    function openChat() {
+    async function openChat() {
         console.log(props.index)
-        props.setChatData(ChatData);
-        props.setUser({id: props.id, name: props.name, data: props.data})
+        const url = new URL(props.URL)
+        url.pathname = "/supervisor/getChats";
+        url.searchParams.set("id", props.index);
+        const result = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + props.jwtToken
+            }
+        }).then(res => res.json());
+        props.setChatData(result);
+        props.setUser({ id: props.index, name: props.name, data: props.data })
     }
 
     return (

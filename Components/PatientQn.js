@@ -49,7 +49,7 @@ const PatientQn = (props) => {
         const fetchData = async () => {
             try {
                 if (questionList.length === 0) {
-                    const URL = "https://8d6e-103-156-19-229.ngrok-free.app" + "/fw/getAllQ";
+                    const URL = props.URL + "/fw/getAllQ";
 
                     // url_get_qn.pathname = '/fw/getAllQ';
                     const params = new URLSearchParams({
@@ -113,7 +113,7 @@ const PatientQn = (props) => {
     const submitForm = async () => {
         try {
             console.log(responses);
-            const URL = "https://8d6e-103-156-19-229.ngrok-free.app" + "/fw/qLogic";
+            const URL = props.URL + "/fw/qLogic";
             const key = "Bearer " + props.jwtToken;
             const patientId = await AsyncStorage.getItem('patientId');
 

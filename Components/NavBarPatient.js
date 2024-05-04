@@ -6,7 +6,6 @@ export default function NavBarPatient(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
   const [patientName, setPatientName] = useState("");
-  const URL = "https://8d6e-103-156-19-229.ngrok-free.app";
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -33,7 +32,7 @@ export default function NavBarPatient(props) {
   async function logOut() {
     try {
       props.setLoad(true);
-      const url = URL + "/auth/logout"
+      const url = props.URL + "/auth/logout"
       const key = "Bearer " + props.jwtToken;
       const response = await fetch(url, {
         method: 'POST',

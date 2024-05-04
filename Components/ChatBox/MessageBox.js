@@ -4,7 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 
 export default function MessageBox(props) {
-    const isSender = props.senderId === props.userId;
+    const isSender = props.senderId !== props.userId;
     const [sent, setSent] = useState('delivered')
 
     function extractHourMinuteAMPM(time) {

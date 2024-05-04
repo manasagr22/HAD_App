@@ -7,7 +7,6 @@ import CheckBox from '@react-native-community/checkbox';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function RegisterPatient(props) {
-    const URL = "https://8d6e-103-156-19-229.ngrok-free.app";
 
     const [focus, setFocus] = useState(null);
     const [gender, setGender] = useState("");
@@ -92,7 +91,7 @@ export default function RegisterPatient(props) {
     useEffect(() => {
         async function getDistrict() {
             try {
-                const res = await fetch(URL+"/fw/getFwDistrict", {
+                const res = await fetch(props.URL+"/fw/getFwDistrict", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -122,7 +121,7 @@ export default function RegisterPatient(props) {
     useEffect(() => {
         async function getSubDiv() {
             try {
-                const res = await fetch(URL+"/fw/getFwSubDistrict", {
+                const res = await fetch(props.URL+"/fw/getFwSubDistrict", {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -193,7 +192,7 @@ export default function RegisterPatient(props) {
         props.setLoad(true);
 
         try {
-            const url = URL + "/fw/regPatient";
+            const url = props.URL + "/fw/regPatient";
             const key = "Bearer " + props.jwtToken;
             const response = await fetch(url, {
                 method: 'POST',

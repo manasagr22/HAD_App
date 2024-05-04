@@ -14,7 +14,7 @@ export default function InputBox(props) {
     const [isModalVisible, setModalVisible] = useState(false);
 
     useEffect(() => {
-        if(searchText === "") {
+        if (searchText === "") {
             // if(props.flatListRef.current) {
             //     const offset = Dimensions.get('window').height
             //     props.flatListRef.current.scrollToOffset({ animated: false, offset: 768 })
@@ -41,8 +41,8 @@ export default function InputBox(props) {
     const convertFormat = (date) => {
         const str = (date.split(","))[0].split("/")
         var dd = str[1], mm = str[0];
-        dd = dd.length === 1 ? '0'+dd : dd;
-        mm = mm.length === 1 ? '0'+mm : mm;
+        dd = dd.length === 1 ? '0' + dd : dd;
+        mm = mm.length === 1 ? '0' + mm : mm;
         return `${dd}/${mm}/${str[2]}`
     }
 
@@ -71,27 +71,38 @@ export default function InputBox(props) {
         }
         const newMessage = {
             key: String(key + 1),
-            id: "1",
+            id: props.senderId,
             data: searchText,
             time: time
         }
 
-        if (props.chatData[date]) {
-            // If the date exists, push the newMessage object into the array
-            props.setChatData(prevChatData => ({
-                ...prevChatData,
-                [date]: [...prevChatData[date], newMessage]
-            }));
-        } else {
-            // If the date doesn't exist, create a new key-value pair with the new date and initialize it with an array containing the newMessage object
-            props.setChatData(prevChatData => ({
-                ...prevChatData,
-                [date]: [newMessage]
-            }));
-        }
+        if (props.client && props.client.connected) {
+            try {
+                if (props.chatData[date]) {
+                    // If the date exists, push the newMessage object into the array
+                    props.setChatData(prevChatData => ({
+                        ...prevChatData,
+                        [date]: [...prevChatData[date], newMessage]
+                    }));
+                } else {
+                    // If the date doesn't exist, create a new key-value pair with the new date and initialize it with an array containing the newMessage object
+                    props.setChatData(prevChatData => ({
+                        ...prevChatData,
+                        [date]: [newMessage]
+                    }));
+                }
+            }
+            catch {
+                props.setChatData(prevChatData => ({
+                    ...prevChatData,
+                    [date]: [newMessage]
+                }));
+            }
 
-        setSearchText("");
-        props.setCountMessages(props.countMessages + 1);
+            props.sendMessageSocket(searchText, props.email, date, time, props.name)
+            setSearchText("");
+        }
+        // props.setCountMessages(props.countMessages + 1);
     }
 
     return (

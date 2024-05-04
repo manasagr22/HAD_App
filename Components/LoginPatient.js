@@ -8,11 +8,9 @@ export default function LoginPatient(props) {
     const [pass, setPass] = useState("");
 
     const loginHandler = async () => {
-
-        const URL = 'https://8d6e-103-156-19-229.ngrok-free.app';
         const key = "Bearer " + props.jwtToken;
         try {
-            const url = URL + '/fw/patientLogIn'
+            const url = props.URL + '/fw/patientLogIn'
             props.setLoad(true);
             const response = await fetch(url, {
                 method: 'POST',

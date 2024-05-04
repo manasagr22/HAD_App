@@ -10,10 +10,8 @@ export default function Login(props) {
     const [email, setEmail] = useState(null);
     const [pass, setPass] = useState(null);
 
-    const URL = "https://8d6e-103-156-19-229.ngrok-free.app";
-
     async function signIn() {
-        const url = URL + "/auth/login"
+        const url = props.URL + "/auth/login"
         console.log(url);
         props.setLoad(true);
 
@@ -39,6 +37,7 @@ export default function Login(props) {
                     props.setAlert({ type: "success", msg: "Login Successful!!!" });
                     props.storeData("user", result.username)
                     props.storeData("role", result.role)
+                    props.storeData("email", email)
                     setEmail("")
                     setPass("")
                     props.setJwtToken(result.jwtToken);
