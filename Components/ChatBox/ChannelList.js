@@ -46,10 +46,12 @@ export default function ChannelList(props) {
     }
 
     async function openChat() {
-        console.log(props.index)
-        const url = new URL(props.URL)
-        url.pathname = "/supervisor/getChats";
-        url.searchParams.set("id", props.index);
+        //console.log(props.userEmail)
+        const URL = props.URL + "/fw/getChats"
+        const params = new URLSearchParams({
+            id: props.userEmail,
+        }).toString();
+        const url = `${URL}?${params}`;
         const result = await fetch(url, {
             method: "GET",
             headers: {
@@ -58,7 +60,8 @@ export default function ChannelList(props) {
             }
         }).then(res => res.json());
         props.setChatData(result);
-        props.setUser({ id: props.index, name: props.name, data: props.data })
+        //console.log(result);
+        props.setUser({ id: props.userEmail, name: props.name, data: props.data })
     }
 
     return (
@@ -73,7 +76,7 @@ export default function ChannelList(props) {
                         </View>
                         <View style={{ flexDirection: "row", alignItems: 'center', width: "75%" }}>
                             {str !== null ? <Text numberOfLines={2} style={[styles.user, { color: 'gray', bottom: 6, fontFamily: 'CrimsonText-Regular', fontSize: 17, flexWrap: 'wrap', width: "95%" }]}>{str}</Text> : undefined}
-                            {str ? <View style={{ position: "relative", marginLeft: 30, bottom: 7 }}>
+                            {str && props.senderId === props.index ? <View style={{ position: "relative", marginLeft: 30, bottom: 7 }}>
                                 <Ionicons name="checkmark-done" size={20} color="gray" />
                             </View> : undefined}
                         </View>
