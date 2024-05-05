@@ -99,7 +99,9 @@ export default function InputBox(props) {
                 }));
             }
 
-            props.sendMessageSocket(searchText, props.email, date, time, props.name)
+            //console.log("Receiver Email: ", props.email);
+
+            props.sendMessageSocket(searchText, props.email, date, time, props.senderName, props.name)
             setSearchText("");
         }
         // props.setCountMessages(props.countMessages + 1);

@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 
 export default function MessageBox(props) {
+    //console.log("senderId: ", props.senderId)
+    //console.log("userId: ", props.userId)
     const isSender = props.senderId !== props.userId;
     const [sent, setSent] = useState('delivered')
 

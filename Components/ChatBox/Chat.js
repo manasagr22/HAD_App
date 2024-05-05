@@ -9,9 +9,9 @@ import ChannelList from './ChannelList';
 import UserTitle from './UserTitle';
 import InputBox from './InputBox';
 import MessageBox from './MessageBox';
-import SockJS from "sockjs-client";
+// import SockJS from "sockjs-client";
 // import { Client } from "@stomp/stompjs";
-import Stomp from "webstomp-client";
+// import Stomp from "webstomp-client";
 import io from 'socket.io-client';
 
 export default function Chat(props) {
@@ -28,10 +28,14 @@ export default function Chat(props) {
   const [client, setClient] = useState(null);
   const [message, setMessage] = useState(null);
   const [senderEmail, setSenderEmail] = useState(null);
+  const [senderName, setSenderName] = useState(null);
+  const [subDiv, setSubDiv] = useState(null);
+  const [msgReceived, setMsgReceived] = useState(null);
 
-  const SOCKET_URL = props.URL + "/ws-message";
-  // const Client = Stomp.client(`ws://${SOCKET_URL});
-  console.log(SOCKET_URL)
+  // const SOCKET_URL = props.URL + "/ws-message";
+  // // const Client = Stomp.client(`ws://${SOCKET_URL});
+  // //console.log(SOCKET_URL)
+  const SOCKET_URL = "https://50c6-119-161-98-68.ngrok-free.app"
 
   useEffect(() => {
     async function connectSocket() {
@@ -39,60 +43,78 @@ export default function Chat(props) {
       setSenderEmail(email);
       if (!email)
         props.navigate("Dashboard");
-      console.log(email)
+      //console.log(email)
 
-      console.log(SOCKET_URL)
-      const socket = io(SOCKET_URL); // Replace with your server address
-    
-    socket.on('connect', () => {
-      console.log('Connected to server');
-    });
+      //console.log(SOCKET_URL)
+      const s = io(SOCKET_URL, {
+        reconnection: false,
+        query: `email=${email}&room=ChatRoom`, //"room=" + room+",username="+username,
+      });
+      setClient(s)
 
-    socket.on('/user/topic/private-messages', (data) => {
-      console.log('Received message:', data);
-    });
+      s.on('connect', () => {
+        //console.log('Connected!');
+      });
 
-    return () => {
-      socket.disconnect();
-    };
+      s.on('read_message', (message) => {
+        const newMessage = {
+          id: message.from,
+          name: message.message.senderName,
+          data: {
+            id: message.from,
+            msg: message.message.messageContent,
+            date: message.message.date,
+            time: message.message.time
+          }
+        };
+        setMsgReceived(newMessage)
+        //console.log('Received message:', message);
+      });
 
-      // const socket1 = new SockJS(SOCKET_URL + `?email=${email}`);
-      // const stompClient = Stomp.over(socket1);
-      
-      // stompClient.connect(
-      //   {},
-      //   frame => {
-      //     console.log('Connected!')
-      //     stompClient.subscribe("/user/topic/private-messages", message => {
-      //       console.log("received)")
-      //       const msg = JSON.parse(message.body)
-      //       console.log(msg)
-      //       const newMessage = {
-      //         id: message.message.to,
-      //         name: user.name,
-      //         data: {
-      //           id: message.from,
-      //           msg: message.message.messageContent,
-      //           date: message.message.date,
-      //           time: message.message.time
-      //         }
-      //       };
-      //       updateReceiverMessage(newMessage);
-      //     });
-      //   },
-      //   error => {
-      //     console.log(error);
-      //   }
-      // );
-      // setClient(stompClient);
-      // return () => {
-      //   stompClient.disconnect(() => {
-      //     console.log('Disconnected!');
-      //   });
-      // };
+      return () => {
+        s.disconnect();
+      };
     }
     connectSocket();
   }, [])
+
+  useEffect(() => {
+    if(msgReceived) {
+        updateReceiverMessage(msgReceived)
+    }
+}, [msgReceived])
+
+  useEffect(() => {
+    async function getName() {
+        const res = await fetch(props.URL+"/fw/name", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + props.jwtToken
+            }
+        })
+
+        if(res.ok)
+          setSenderName(await res.text())
+    }
+
+    async function getSubDiv() {
+      const res = await fetch(props.URL+"/fw/getFwSubDistrict", {
+          method: "GET",
+          headers: {
+              "Content-Type": "application/json",
+              "Authorization": "Bearer " + props.jwtToken
+          }
+      }).then(res => res.json())
+
+      setSubDiv(res.subdist)
+  }
+  
+  if(!senderName && props.jwtToken !== null)
+      getName();
+  if(!subDiv && props.jwtToken !== null)
+      getSubDiv();
+}, [senderName, subDiv, props.jwtToken])
 
   const updateReceiverMessage = (message) => {
     const conversationIndex = data ? data.findIndex((conversation) => conversation.id === message.id) : -1;
@@ -102,9 +124,11 @@ export default function Chat(props) {
       // Update the data array with the latest message
       setData((prevData) => {
         const newData = [...prevData]; // Create a shallow copy of the data array
-        console.log(newData)
-        console.log(newData[conversationIndex])
+        //console.log(newData)
+        //console.log(newData[conversationIndex])
         newData[conversationIndex].data = message.data; // Update the data of the conversation
+        newData[conversationIndex].id = message.id;
+        newData[conversationIndex].name = message.name;
         return newData;
       });
     } else {
@@ -154,24 +178,25 @@ export default function Chat(props) {
     try {
       if (chatData[date]) {
         // If the date exists, push the newMessage object into the array
-        props.setChatData(prevChatData => ({
+        setChatData(prevChatData => ({
           ...prevChatData,
           [date]: [...prevChatData[date], newMessage]
         }));
       } else {
         // If the date doesn't exist, create a new key-value pair with the new date and initialize it with an array containing the newMessage object
-        props.setChatData(prevChatData => ({
+        setChatData(prevChatData => ({
           ...prevChatData,
           [date]: [newMessage]
         }));
       }
     }
     catch {
-      props.setChatData(prevChatData => ({
+      setChatData(prevChatData => ({
         ...prevChatData,
         [date]: [newMessage]
       }));
     }
+    setMsgReceived(null);
   }
 
   const updateDataWithMessage = (message) => {
@@ -183,9 +208,11 @@ export default function Chat(props) {
       // Update the data array with the latest message
       setData((prevData) => {
         const newData = [...prevData]; // Create a shallow copy of the data array
-        console.log(newData)
-        console.log(newData[conversationIndex])
+        //console.log(newData)
+        //console.log(newData[conversationIndex])
         newData[conversationIndex].data = message.data; // Update the data of the conversation
+        newData[conversationIndex].id = message.id;
+        newData[conversationIndex].name = message.name;
         return newData;
       });
     } else {
@@ -220,18 +247,22 @@ export default function Chat(props) {
   };
 
   useEffect(() => {
-    async function sendPrivateMessage(text, to, date, time, name) {
-      console.log(client);
-      if (client && client.connected) {
-        console.log(text, to);
-        client.send({
-          destination: "/ws/private-message",
-          body: JSON.stringify({ messageContent: text, to: to, date: date, time: time }),
+    async function sendPrivateMessage(text, to, date, time, senderName, receiverName) {
+      //console.log(client);
+      if (client) {
+        //console.log(text, to);
+        client.emit("send_message", {
+          messageContent: text,
+          to: to,
+          senderName: senderName,
+          receiverName: receiverName,
+          date: date,
+          time: time,
         });
 
         const newMessage = {
           id: to,
-          name: name,
+          name: receiverName,
           data: {
             id: senderEmail,
             msg: text,
@@ -239,6 +270,8 @@ export default function Chat(props) {
             time: time
           }
         }
+
+        //console.log("Send Message: ", newMessage)
 
         updateDataWithMessage(newMessage);
 
@@ -250,7 +283,7 @@ export default function Chat(props) {
   }, [client])
 
   useEffect(() => {
-    // console.log(props.isKeyboardVisible);
+    // //console.log(props.isKeyboardVisible);
     ;
   }, [props.isKeyboardVisible])
 
@@ -323,9 +356,43 @@ export default function Chat(props) {
   }, [searchText])
 
   useEffect(() => {
+
+    async function getFW() {
+        try {
+            const result = await fetch(props.URL+"/fw/getProfiles", {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + props.jwtToken
+                }
+            })
+
+            props.setLoad(false);
+
+            if (result.ok) {
+                const res = await result.json();
+                if (res.length !== 0) {
+                    setConstData(res)
+                    setData(res);
+                }
+            }
+            else {
+                props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+            }
+        }
+        catch {
+            props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+        }
+    }
+    if (Data === null && props.jwtToken !== null) {
+        getFW();
+    }
+}, [Data, props.jwtToken])
+
+  useEffect(() => {
     if (chatDataWithLabels !== null) {
       if (flatListRef.current) {
-        // console.log(props.isKeyboardVisible)
+        // //console.log(props.isKeyboardVisible)
         const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
         flatListRef.current.scrollToOffset({ animated: false, offset: offset })
         // flatListRef.current.scrollToOffset({ animated: false, offset: 0 });
@@ -367,8 +434,8 @@ export default function Chat(props) {
             <View style={styles.avatarView}>
               <Image source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80' }} style={styles.avatar} />
               <View style={{ height: "80%", marginTop: "auto", marginBottom: "auto" }}>
-                <Text style={[styles.user, { height: "50%", top: 2 }]}>Manas Agrawal</Text>
-                <Text style={[styles.user, { color: 'black', fontFamily: 'CrimsonText-Regular', fontSize: 19, bottom: 3 }]}>Area: Indore</Text>
+                <Text style={[styles.user, { height: "50%", top: 2 }]}>{senderName}</Text>
+                <Text style={[styles.user, { color: 'black', fontFamily: 'CrimsonText-Regular', fontSize: 19, bottom: 3 }]}>Area: {subDiv}</Text>
               </View>
             </View>
             <FontAwesome6 name="edit" size={25} style={styles.icon} />
@@ -385,7 +452,7 @@ export default function Chat(props) {
           </View>
           <View style={styles.channelContainer}>
             {topPadding && data ? <FlatList data={data} contentContainerStyle={{ justifyContent: 'space-evenly', paddingTop: topPadding - 30, paddingBottom: 0 }} style={{ flexGrow: 1 }} renderItem={({ item }) => (
-              <ChannelList key={item.id} name={item.name} data={item.data} senderId={senderEmail} index={item.id} setChatData={setChatData} setUser={setUser} jwtToken={props.jwtToken} />
+              <ChannelList key={item.id} userEmail={item.id} name={item.name} data={item.data} senderId={senderEmail} index={item.data.id} setChatData={setChatData} setUser={setUser} jwtToken={props.jwtToken} URL={props.URL}/>
             )}
             /> : undefined}
           </View>
@@ -402,7 +469,7 @@ export default function Chat(props) {
                     <Text style={styles.dateSeparatorText}>{getLabel(item.dateLabel)}</Text>
                   </View>
                   <FlatList data={props.isKeyboardVisible ? item.messages : item.messages.reverse()} inverted={props.isKeyboardVisible ? false : true} contentContainerStyle={{ justifyContent: 'space-evenly', paddingBottom: 0 }} style={{ flexGrow: 1 }} renderItem={({ item: message }) => (
-                    <MessageBox senderId={message.id} userId={user.email} data={message.data} time={message.time} keyItem={message.key} />
+                    <MessageBox senderId={message.id} userId={user.id} data={message.data} time={message.time} keyItem={message.key} />
                   )} />
                 </View>
               )}
@@ -419,7 +486,7 @@ export default function Chat(props) {
               /> : undefined}
             </View>
             <View style={[styles.bottomContainer2, { marginBottom: props.isKeyboardVisible[1] }]}>
-              <InputBox countMessages={countMessages} setCountMessages={setCountMessages} isKeyboardVisible={props.isKeyboardVisible} setChatData={setChatData} chatData={chatData} flatListRef={flatListRef} sendMessageSocket={sendMessageSpecificRef.current} email={user.id} senderId={senderEmail} client={client} name={user.name} />
+              <InputBox countMessages={countMessages} setCountMessages={setCountMessages} isKeyboardVisible={props.isKeyboardVisible} setChatData={setChatData} chatData={chatData} flatListRef={flatListRef} sendMessageSocket={sendMessageSpecificRef.current} email={user.id} senderId={senderEmail} client={client} name={user.name} senderName={senderName} />
             </View>
           </View> : undefined}
         </View> : undefined}
