@@ -107,6 +107,10 @@ export default function NavBarPatient(props) {
         <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Questionnaire")}>
           <Text style={styles.buttonText}>Take Questionnaire</Text>
         </TouchableOpacity>
+
+        <TouchableOpacity style={styles.buttonLogout} activeOpacity={1} onPress={() => props.navigate("Dashboard")}>
+          <Text style={styles.buttonTextLogout}>Log Out Patient</Text>
+        </TouchableOpacity>
 {/*         
         <TouchableOpacity style={[styles.button, styles.secondaryButton]} activeOpacity={1} onPress={() => props.navigate("Register")}>
           <Text style={styles.buttonText}>Register Patient</Text>
@@ -202,10 +206,21 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
 
   },
+  buttonLogout: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#FF0800',
+    borderRadius: 10,
+    marginRight: 15,
+  },
   secondaryButton: {
     backgroundColor: '#EF4444',
   },
   buttonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  buttonTextLogout: {
     color: 'white',
     fontWeight: 'bold',
   },

@@ -11,7 +11,7 @@ buildscript {
         google()
         mavenCentral()
         // ADD THIS
-      maven { url 'https://maven.google.com' }
+      maven { url 'https://maven.google.com'},
 
       // ADD THIS
       maven { url "https://www.jitpack.io" }

@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AudioRecorder2 from "./AudioRecord2";
 const PatientQn = (props) => {
     const navigation = useNavigation();
     //   const loginActiveUser = AsyncStorage.getItem('loginActiveUser');
@@ -20,7 +21,7 @@ const PatientQn = (props) => {
         setSelectedValue(value);
     }
 
-    const handleSelectMCQ = (questionIndex, option) => {
+    const handleSelectMCQ = (questionIndex, option, option_letter) => {
         setResponses(prevResponses => {
             const updatedResponses = [...prevResponses];
             // Ensure the responses array has enough elements to accommodate the question index
@@ -28,7 +29,7 @@ const PatientQn = (props) => {
                 updatedResponses.push({ qid: questionList[questionIndex].publicId });
             }
             // Update the response for the specified question index
-            updatedResponses[questionIndex] = { ...updatedResponses[questionIndex], mcqAns: option };
+            updatedResponses[questionIndex] = { ...updatedResponses[questionIndex], mcqAns: option_letter };
             return updatedResponses;
         });
     };
@@ -41,7 +42,7 @@ const PatientQn = (props) => {
                 updatedResponses.push({ qid: questionList[questionIndex].publicId });
             }
             // Update the response for the specified question index
-            updatedResponses[questionIndex] = { ...updatedResponses[questionIndex], rangeAns: value };
+            updatedResponses[questionIndex] = { ...updatedResponses[questionIndex], rangeAns: value};
             return updatedResponses;
         });
     };
@@ -125,7 +126,7 @@ const PatientQn = (props) => {
                     Authorization: key,
                 },
                 body: JSON.stringify({
-                    pid: parseInt(patientId),
+                    pid: patientId,
                     qnName: 'adminQuestionnaire',
                     answers: responses
                 }),
@@ -272,7 +273,7 @@ const PatientQn = (props) => {
                                 <TouchableOpacity
                                     key={1}
                                     style={[styles.optionContainer, selectedOption === 1 && styles.selectedOption]}
-                                    onPress={() => { handleSelectMCQ(currQInd, questionList[currQInd].option1); handleOptionSelect(1) }}
+                                    onPress={() => { handleSelectMCQ(currQInd, questionList[currQInd].option1, "A"); handleOptionSelect(1) }}
                                 >
                                     <View style={styles.radioButton}>
                                         {selectedOption === 1 && <View style={styles.radioInnerCircle} />}
@@ -284,7 +285,7 @@ const PatientQn = (props) => {
                                 <TouchableOpacity
                                     key={2}
                                     style={[styles.optionContainer, selectedOption === 2 && styles.selectedOption]}
-                                    onPress={() => { handleSelectMCQ(currQInd, questionList[currQInd].option2); handleOptionSelect(2) }}
+                                    onPress={() => { handleSelectMCQ(currQInd, questionList[currQInd].option2, "B"); handleOptionSelect(2) }}
                                 >
                                     <View style={styles.radioButton}>
                                         {selectedOption === 2 && <View style={styles.radioInnerCircle} />}
@@ -297,7 +298,7 @@ const PatientQn = (props) => {
                                 <TouchableOpacity
                                     key={3}
                                     style={[styles.optionContainer, selectedOption === 3 && styles.selectedOption]}
-                                    onPress={() => { handleSelectMCQ(currQInd, questionList[currQInd].option3); handleOptionSelect(3) }}
+                                    onPress={() => { handleSelectMCQ(currQInd, questionList[currQInd].option3, "C"); handleOptionSelect(3) }}
                                 >
                                     <View style={styles.radioButton}>
                                         {selectedOption === 3 && <View style={styles.radioInnerCircle} />}
@@ -309,7 +310,7 @@ const PatientQn = (props) => {
                                 <TouchableOpacity
                                     key={4}
                                     style={[styles.optionContainer, selectedOption === 4 && styles.selectedOption]}
-                                    onPress={() => { handleSelectMCQ(currQInd, questionList[currQInd].option4); handleOptionSelect(4) }}
+                                    onPress={() => { handleSelectMCQ(currQInd, questionList[currQInd].option4, "D"); handleOptionSelect(4) }}
                                 >
                                     <View style={styles.radioButton}>
                                         {selectedOption === 4 && <View style={styles.radioInnerCircle} />}
@@ -320,12 +321,7 @@ const PatientQn = (props) => {
                         )}
                         {currCategory === "descriptive" && (
                             <View style={styles.descriptiveContainer}>
-                                <Text style={styles.answerLabel}>Answer</Text>
-                                <TextInput
-                                    style={styles.answerInput}
-                                    multiline
-                                    placeholder="Enter your Answer here..."
-                                />
+                                {/* <AudioRecorder2 /> */}
                             </View>
                         )}
                         {currCategory === "range" && (

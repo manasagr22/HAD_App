@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function LoginPatient(props) {
     const [focus, setFocus] = useState(null);
     const [aabha, setAabha] = useState("");
@@ -26,7 +26,8 @@ export default function LoginPatient(props) {
 
             if (response !== null) {
                 props.setAlert({ type: "success", msg: "Login Successful!" });
-
+                await AsyncStorage.setItem('patientId', response.publicId.toString());
+                await AsyncStorage.setItem('patientName', response.firstName);
                 props.navigate("LoggedIn Patient");
 
             }
