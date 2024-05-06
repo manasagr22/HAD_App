@@ -50,7 +50,7 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [URLMain, setURL] = useState("https://7d7f-103-156-19-229.ngrok-free.app");
+  const [URLMain, setURL] = useState("https://a6b2-103-156-19-229.ngrok-free.app");
   // const navigation = useNavigation();
   const Stack = createNativeStackNavigator();
 
@@ -116,7 +116,6 @@ function App() {
     // clear();
   }, [jwtToken])
 
-
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}
       accessible={false}>
@@ -124,9 +123,9 @@ function App() {
         <GestureHandlerRootView style={{ flex: 1 }}>
           <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-              {/* <Stack.Screen name='Chat'>
-                {() => <Chatting URL={URL} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
-              </Stack.Screen> */}
+              {/*<Stack.Screen name='Patient Questionnaire'>
+                {() => <PatientQuesn URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+              </Stack.Screen>*/}
               <Stack.Screen name="Login">
                 {() => <LoginFW URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} setJwtToken={setJwtToken} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
@@ -143,9 +142,9 @@ function App() {
                 {() => <LoginPat URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
 
-              <Stack.Screen name='Patient Questionnaire'>
+              {/* <Stack.Screen name='Patient Questionnaire'>
                 {() => <PatientQuesn URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
-              </Stack.Screen>
+              </Stack.Screen> */}
 
               <Stack.Screen name='LoggedIn Patient'>
                 {() => <LoggedPat URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
