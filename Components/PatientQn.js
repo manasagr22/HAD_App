@@ -134,7 +134,7 @@ const PatientQn = (props) => {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: key,
+                    "Authorization": key,
                 },
                 body: JSON.stringify({
                     pid: patientId,
