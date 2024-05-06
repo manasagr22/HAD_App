@@ -6,7 +6,7 @@ export default function NavBarPatient(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
   const [patientName, setPatientName] = useState("");
-
+  const [patientId, setPatientId] = useState(0);
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
   };
@@ -18,6 +18,15 @@ export default function NavBarPatient(props) {
     }
 
     fetchName()
+  }, []);
+
+  useEffect(() => {
+    const fetchId = async () => {
+      const patientId = await AsyncStorage.getItem('patientId');
+      setPatientId(patientId)
+    }
+
+    fetchId()
   }, []);
 
   const handlePress = (index) => {
@@ -71,6 +80,46 @@ export default function NavBarPatient(props) {
   }
 
 
+  const handleLatestFollowUp = async () => {
+      try{
+        const url = new URL(props.URL);
+        url.pathname = "/checkFollowUp";
+
+        url.searchParams.set('id', patientId);
+
+        const response = await fetch(url, {
+          method: 'GET',
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + props.jwtToken
+          }
+        })
+
+        if(response == null){
+          props.setAlert({ type: "danger", msg: "No Follow up at the moment" });
+          setTimeout(() => {
+            props.setAlert(null);
+        }, 1800)
+        }
+        else{
+          response = response.json();
+
+          if(response.task_type === "questionnaire"){
+            props.navigate("Patient Questionnaire");
+          }
+          else if(response.task_type === "prescription"){
+            props.navigate("Patient Prescription");
+          }
+          else if(response.task_type === "appointment_for_field_worker"){
+            props.navigate("FW Appointment");
+          }
+        }
+
+      }catch(err){
+        console.log(err)
+      }
+  }
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.imgContainer}>
@@ -104,8 +153,8 @@ export default function NavBarPatient(props) {
 
       <View style={styles.buttonsContainer}>
         <Text style={styles.titleText}>Hello, {patientName}</Text>
-        <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Questionnaire")}>
-          <Text style={styles.buttonText}>Take Questionnaire</Text>
+        <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Prescription")}>
+          <Text style={styles.buttonText}>Get Latest Follow Up</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buttonLogout} activeOpacity={1} onPress={() => props.navigate("Dashboard")}>

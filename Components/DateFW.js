@@ -6,23 +6,55 @@ import { StyleSheet, TouchableOpacity, FlatList } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import TaskCard from "./TaskCard";
-const DatePatient = (props) => {
+const DateFW = (props) => {
     const navigation = useNavigation();
     const [currInd, setcurrInd] = useState(0);
+    const currDate = props.currentSelectedDate;
 
-    const [tasksList, currTasksList] = useState([
-        { id: 1, title: 'Task 1', description: 'Description for Task 1' },
-        { id: 2, title: 'Task 2', description: 'Description for Task 2' },
-        { id: 3, title: 'Task 3', description: 'Description for Task 3' },
-        { id: 4, title: 'Task 4', description: 'Description for Task 4' },
-        { id: 5, title: 'Task 5', description: 'Description for Task 5' },
-        { id: 6, title: 'Task 1', description: 'Description for Task 1' },
-        { id: 7, title: 'Task 2', description: 'Description for Task 2' },
-        { id: 8, title: 'Task 3', description: 'Description for Task 3' },
-        { id: 9, title: 'Task 4', description: 'Description for Task 4' },
-        { id: 10, title: 'Task 5', description: 'Description for Task 5' },])
+    console.log('Date: ' + currDate);
 
-    const length = 10;
+    
+
+
+    const [tasksList, setcurrTasksList] = useState([
+        {
+          "task_id": 1,
+          "type": "work",
+          "deadline": "2024-05-10",
+          "date": "2024-05-06",
+          "description": "Complete project proposal"
+        },
+        {
+          "task_id": 2,
+          "type": "work",
+          "deadline": "2024-05-08",
+          "date": "2024-05-06",
+          "description": "Send follow-up emails"
+        },
+        {
+          "task_id": 3,
+          "type": "personal",
+          "deadline": "2024-05-12",
+          "date": "2024-05-07",
+          "description": "Review project draft"
+        },
+        {
+          "task_id": 4,
+          "type": "work",
+          "deadline": "2024-05-10",
+          "date": "2024-05-07",
+          "description": "Attend team meeting"
+        }
+      ]
+      
+    )
+
+    // useEffect(() => {
+    //     // change curr task list from backend
+    //     // get task of date
+    //     setcurrTasksList([])
+        
+    // }, [currDate]);
 
     const prev = () => {
         if (currInd > 0) {
@@ -65,12 +97,21 @@ const DatePatient = (props) => {
             <View style={styles.container}>
 
                 {/* tasks list */}
-                <View style={{flex: 1, zIndex: 1}}>
-                    <FlatList
+                <View style={{ flex: 1, zIndex: 1 }}>
+                    {tasksList.length > 0 ? <FlatList
                         data={tasksList}
                         renderItem={({ item }) => <TaskCard task={item} />}
-                        keyExtractor={(item) => item.id.toString()}
-                    />
+                        keyExtractor={(item) => item.task_id.toString()}
+                    /> : <View><Text style={{
+                        marginBottom: 10,
+                        
+                        marginTop: 10,
+                        fontSize: 26,
+                        fontWeight: "bold",
+                        textAlign: "center",
+                        color: "#686868",
+                    }}>No Tasks on this day :)</Text></View>}
+                    
 
                 </View>
 
@@ -126,4 +167,4 @@ const styles = StyleSheet.create({
 
 });
 
-export default DatePatient;
+export default DateFW;

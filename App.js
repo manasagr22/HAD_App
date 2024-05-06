@@ -42,7 +42,9 @@ import PatientQn from './Components/PatientQn';
 import NavBarPatient from './Components/NavBarPatient';
 import AgendaComponent from './Components/AgendaComponent';
 import CalendarComponent from './Components/CalandarComponent';
-import DatePatient from './Components/DatePatient';
+import DatePatient from './Components/DateFW';
+import DateFW from './Components/DateFW';
+import PatientPrescr from './Components/PatientPrescr';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -50,7 +52,7 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [URLMain, setURL] = useState("https://a6b2-103-156-19-229.ngrok-free.app");
+  const [URLMain, setURL] = useState("https://9270-119-161-98-68.ngrok-free.app");
   // const navigation = useNavigation();
   const Stack = createNativeStackNavigator();
 
@@ -142,13 +144,19 @@ function App() {
                 {() => <LoginPat URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
 
-              {/* <Stack.Screen name='Patient Questionnaire'>
+              <Stack.Screen name='Patient Questionnaire'>
                 {() => <PatientQuesn URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
-              </Stack.Screen> */}
+              </Stack.Screen>
+
+              <Stack.Screen name='Patient Prescription'>
+                {() => <PatientPrescription URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+              </Stack.Screen>
 
               <Stack.Screen name='LoggedIn Patient'>
                 {() => <LoggedPat URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
+
+
             </Stack.Navigator>
           </NavigationContainer>
         </GestureHandlerRootView>
@@ -245,6 +253,9 @@ const DashboardParent = (props) => {
       </View>
     );
   };
+
+  const [currentSelectedDate, setCurrentSelectedDate] = useState("");
+
   return (
     <View style={[styles.background, styles.container]}>
       {props.load ? <Spinner /> : undefined}
@@ -253,8 +264,8 @@ const DashboardParent = (props) => {
         <NavBar URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
 
         <View style={{flex: 1, flexDirection: 'row'}}>
-          <CalendarComponent />
-          <DatePatient />
+          <CalendarComponent currentSelectedDate={currentSelectedDate} setCurrentSelectedDate={setCurrentSelectedDate}/>
+          <DateFW currentSelectedDate={currentSelectedDate}/>
         </View>
 
       </View>
@@ -440,6 +451,52 @@ const PatientQuesn = (props) => {
 
     </View>
   )
+}
+
+const PatientPrescription = (props) => {
+  const [isKeyboardVisible, setKeyboardVisible] = useState([false, 0]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      ({ endCoordinates }) => {
+        setKeyboardVisible([true, endCoordinates.height]);
+        const keyboardHeight = Dimensions.get('window').height - endCoordinates.screenY;
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible([false, 0]);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
+  return (
+    <View style={[styles.background, styles.container]}>
+
+      <NavBarPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+
+
+      {props.load ? <Spinner /> : undefined}
+      {props.alert ? <Alert alert={props.alert} /> : undefined}
+
+      <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
+        <PatientPrescr URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
+
+      </View>
+
+
+
+    </View>
+  )
+
 }
 
 const styles = StyleSheet.create({
