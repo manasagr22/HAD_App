@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PropsWithChildren } from 'react';
 import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { MaterialIcons } from '@expo/vector-icons';
+import { Calendar, LocaleConfig, Agenda } from 'react-native-calendars';
 import {
   Dimensions,
   Image,
@@ -13,6 +16,7 @@ import {
   Text,
   useColorScheme,
   View,
+  TouchableOpacity,
 } from 'react-native';
 
 import {
@@ -29,12 +33,16 @@ import LoginPatient from './Components/LoginPatient';
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { StreamChat } from 'stream-chat';
 import Chat from './Components/ChatBox/Chat';
 import Spinner from './Components/Spinner';
 import Alert from './Components/Alert';
 import LoggedInPatient from './Components/LoggedInPatient';
 import PatientQn from './Components/PatientQn';
 import NavBarPatient from './Components/NavBarPatient';
+import AgendaComponent from './Components/AgendaComponent';
+import CalendarComponent from './Components/CalandarComponent';
+import DatePatient from './Components/DatePatient';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -214,13 +222,41 @@ const LoginFW = (props) => {
 
 const DashboardParent = (props) => {
   const navigation = useNavigation();
-
+  const [selected, setSelected] = useState('');
+  const [items, setItems] = useState({});
+  const loadItems = (day) => {
+    // Simulate loading data for the selected day
+    setTimeout(() => {
+      const newItems = {
+        [day]: [
+          { name: 'Task 1', time: '10:00 AM' },
+          { name: 'Task 2', time: '2:00 PM' },
+          { name: 'Task 3', time: '4:30 PM' },
+        ],
+      };
+      setItems(newItems);
+    }, 1000);
+  };
+  const renderCustomItem = (item) => {
+    return (
+      <View style={{ margin: 10 }}>
+        <Text style={{ fontWeight: 'bold' }}>{item.time}</Text>
+        <Text>{item.name}</Text>
+      </View>
+    );
+  };
   return (
     <View style={[styles.background, styles.container]}>
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
         <NavBar URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+
+        <View style={{flex: 1, flexDirection: 'row'}}>
+          <CalendarComponent />
+          <DatePatient />
+        </View>
+
       </View>
     </View>
   )
@@ -356,7 +392,7 @@ const LoggedPat = (props) => {
         <Text style={styles.welcomeText}>Welcome to</Text>
         <Text style={[styles.title, styles.blueText]}>Medimate</Text>
       </View>
-      
+
     </View>
   </View>)
 }
