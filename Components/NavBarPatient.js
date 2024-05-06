@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-
+import { MaterialIcons } from '@expo/vector-icons';
 export default function NavBarPatient(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -103,15 +103,18 @@ export default function NavBarPatient(props) {
       </View>
 
       <View style={styles.buttonsContainer}>
-      <Text style={styles.titleText}>Hello, {patientName}</Text>
+        <Text style={styles.titleText}>Hello, {patientName}</Text>
         <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Questionnaire")}>
           <Text style={styles.buttonText}>Take Questionnaire</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buttonLogout} activeOpacity={1} onPress={() => props.navigate("Dashboard")}>
-          <Text style={styles.buttonTextLogout}>Log Out Patient</Text>
-        </TouchableOpacity>
-{/*         
+  <View style={styles.logoutContainer}>
+    <Text style={styles.buttonTextLogout}>Log Out Patient</Text>
+    <MaterialIcons name="logout" size={20} color="white" style={{ marginLeft: 5 }} />
+  </View>
+</TouchableOpacity>
+        {/*         
         <TouchableOpacity style={[styles.button, styles.secondaryButton]} activeOpacity={1} onPress={() => props.navigate("Register")}>
           <Text style={styles.buttonText}>Register Patient</Text>
         </TouchableOpacity> */}
@@ -207,11 +210,13 @@ const styles = StyleSheet.create({
 
   },
   buttonLogout: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#FF0800',
-    borderRadius: 10,
-    marginRight: 15,
+    backgroundColor: '#FF0000', // Add your button background color
+    borderRadius: 5, // Add your button border radius
+    padding: 9, // Add your button padding
+    justifyContent: 'center', // Center items vertically
+    alignItems: 'center', // Center items horizontally
+    marginRight: 25,
+    borderRadius: 10
   },
   secondaryButton: {
     backgroundColor: '#EF4444',
@@ -221,8 +226,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonTextLogout: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: 'white', // Add your text color
+    fontWeight: 'bold', // Add your text font weight
+  },
+  logoutContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   titleText: {
     color: 'black',
