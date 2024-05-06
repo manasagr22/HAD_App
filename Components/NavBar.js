@@ -9,50 +9,50 @@ export default function NavBar(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
   const [countNotification, setCountNotification] = useState(null);
-  const SOCKET_URL = "https://e76a-103-156-19-229.ngrok-free.app"
-  const [msgReceived, setMsgReceived] = useState(null);
+  // const SOCKET_URL = "https://e76a-103-156-19-229.ngrok-free.app"
+  // const [msgReceived, setMsgReceived] = useState(null);
 
-  useEffect(() => {
-    async function connectSocket() {
-      const email = await props.getData("email")
-      if (!email)
-        props.navigate("Login");
-      //console.log(email)
+  // useEffect(() => {
+  //   async function connectSocket() {
+  //     const email = await props.getData("email")
+  //     if (!email)
+  //       props.navigate("Login");
+  //     //console.log(email)
 
-      //console.log(SOCKET_URL)
-      const s = io(SOCKET_URL, {
-        reconnection: false,
-        query: `email=${email}&room=NotificationRoom`, //"room=" + room+",username="+username,
-      });
-      // setClient(s)
+  //     //console.log(SOCKET_URL)
+  //     const s = io(SOCKET_URL, {
+  //       reconnection: false,
+  //       query: `email=${email}&room=NotificationRoom`, //"room=" + room+",username="+username,
+  //     });
+  //     // setClient(s)
 
-      s.on('connect', () => {
-        console.log('Connected!');
-      });
+  //     s.on('connect', () => {
+  //       console.log('Connected!');
+  //     });
 
-      s.on('receive_notification', (message) => {
-        console.log(message);
-        setMsgReceived(message)
-        //console.log('Received message:', message);
-      });
+  //     s.on('receive_notification', (message) => {
+  //       console.log(message);
+  //       setMsgReceived(message)
+  //       //console.log('Received message:', message);
+  //     });
 
-      return () => {
-        console.log('Disconnected!')
-        s.disconnect();
-      };
-    }
-    connectSocket();
-  }, [])
+  //     return () => {
+  //       console.log('Disconnected!')
+  //       s.disconnect();
+  //     };
+  //   }
+  //   connectSocket();
+  // }, [])
 
-  useEffect(() => {
-    if(msgReceived) {
-      updateReceiverMessage(msgReceived)
-    }
-  }, [msgReceived])
+  // useEffect(() => {
+  //   if(msgReceived) {
+  //     updateReceiverMessage(msgReceived)
+  //   }
+  // }, [msgReceived])
 
-  const updateReceiverMessage = async(message)  => {
-    ;
-  }
+  // const updateReceiverMessage = async(message)  => {
+  //   ;
+  // }
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
