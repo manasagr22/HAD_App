@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PropsWithChildren } from 'react';
-import { Keyboard, TouchableWithoutFeedback } from 'react-native';
+import { Keyboard, LogBox, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -48,6 +48,7 @@ import PatientPrescr from './Components/PatientPrescr';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
+  LogBox.ignoreLogs(['new NativeEventEmitter']);
 
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
@@ -105,11 +106,13 @@ function App() {
               await storeData("/", jwtToken)
             }
             else {
+              console.log("Clearing...")
               clear();
             }
           }
         }
         catch {
+          console.log("Clearing...Error")
           clear();
         }
       }
@@ -261,7 +264,7 @@ const DashboardParent = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <NavBar URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
         <View style={{flex: 1, flexDirection: 'row'}}>
           <CalendarComponent currentSelectedDate={currentSelectedDate} setCurrentSelectedDate={setCurrentSelectedDate}/>
@@ -305,7 +308,7 @@ const Register = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <NavBar URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
         <ScrollView ref={scrollViewRef}>
           <RegisterPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} scrollViewRef={scrollViewRef} />
         </ScrollView>
@@ -397,7 +400,7 @@ const LoggedPat = (props) => {
     {props.alert ? <Alert alert={props.alert} /> : undefined}
     <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height, alignItems: 'center' }}>
 
-      <NavBarPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+      <NavBarPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
       <View style={styles.boxcontainer}>
         <Text style={styles.welcomeText}>Welcome to</Text>
@@ -436,7 +439,7 @@ const PatientQuesn = (props) => {
   return (
     <View style={[styles.background, styles.container]}>
 
-      <NavBarPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+      <NavBarPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
 
       {props.load ? <Spinner /> : undefined}
