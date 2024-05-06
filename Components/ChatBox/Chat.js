@@ -35,7 +35,7 @@ export default function Chat(props) {
   // const SOCKET_URL = props.URL + "/ws-message";
   // // const Client = Stomp.client(`ws://${SOCKET_URL});
   // //console.log(SOCKET_URL)
-  const SOCKET_URL = "https://50c6-119-161-98-68.ngrok-free.app"
+  const SOCKET_URL = "https://2ff1-103-156-19-229.ngrok-free.app"
 
   useEffect(() => {
     async function connectSocket() {

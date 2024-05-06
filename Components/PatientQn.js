@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, TextInput, ScrollView } from "react-native";
+import { View, Text, Button, TextInput, ScrollView, Platform, PermissionsAndroid } from "react-native";
 // import NavbarFW2 from "../../components/NavbarFW2";
 import { useNavigation } from "@react-navigation/native";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AudioRecorder2 from "./AudioRecord2";
+import { Feather } from "@expo/vector-icons";
+import { AntDesign } from '@expo/vector-icons';
+import { FontAwesome6 } from '@expo/vector-icons';
+import Sound from 'react-native-sound'
+import RNFS from 'react-native-fs';
 const PatientQn = (props) => {
     const navigation = useNavigation();
     //   const loginActiveUser = AsyncStorage.getItem('loginActiveUser');
@@ -16,6 +21,12 @@ const PatientQn = (props) => {
     const [currCategory, setCurrentCategory] = useState("mcq");
     const [selectedValue, setSelectedValue] = useState(null);
     const [responses, setResponses] = useState([]);
+    const [recording, setRecording] = useState(null);
+    const [play, setPlay] = useState(false);
+    const [audioFile, setAudioFile] = useState(null);
+    const [loaded, setLoaded] = useState(false);
+    const [paused, setPaused] = useState(true);
+    const [sound, setSound] = useState(null);
 
     const handleSelectValue = (value) => {
         setSelectedValue(value);
@@ -42,7 +53,7 @@ const PatientQn = (props) => {
                 updatedResponses.push({ qid: questionList[questionIndex].publicId });
             }
             // Update the response for the specified question index
-            updatedResponses[questionIndex] = { ...updatedResponses[questionIndex], rangeAns: value};
+            updatedResponses[questionIndex] = { ...updatedResponses[questionIndex], rangeAns: value };
             return updatedResponses;
         });
     };
@@ -134,7 +145,7 @@ const PatientQn = (props) => {
             })
             console.log(await response.text())
             props.setAlert({ type: "success", msg: "Form Submitted Successfully" });
-            
+
         } catch (err) {
             props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });
             console.log(err);
@@ -144,6 +155,90 @@ const PatientQn = (props) => {
             props.setAlert(null);
         }, 1800)
     };
+
+    useEffect(() => {
+    const load = () => {
+        return new Promise((resolve, reject) => {
+            if(!audioFile) {
+                props.setAlert({type: "danger", msg: "Error while saving Audio"})
+                return reject('file path is empty');
+            }
+
+            Sound.setCategory('Playback');
+            const directory = RNFS.DocumentDirectoryPath;
+
+                  const fileName = 'test1.wav';
+                  const filePath = `${directory}/${fileName}`;
+            RNFS.writeFile(filePath, audioFile, 'base64')
+
+            const s = new Sound(filePath, '', error => {
+                if(error) {
+                    props.setAlert({type: "danger", msg: "Error while saving Audio"})
+                    return reject(error);
+                }
+            })
+
+            setSound(s);
+
+            setLoaded(true);
+            return resolve();
+        })
+      }
+
+      const playAudio = async () => {
+        if(!loaded) {
+            try {
+                await load();
+            }
+            catch {
+               props.setAlert({type: "danger", msg: "Error while saving Audio"})
+            }
+        }
+      }
+
+      if(play && audioFile) {
+      playAudio();
+      }
+      }, [play, audioFile])
+
+      useEffect(() => {
+      async function playAudio() {
+      sound.play(success => {
+                  if(success) {
+//                      setLoaded(false)
+                      setPaused(true)
+                      setPlay(false);
+                  }
+              })
+      }
+
+      const pause = () => {
+            if(sound) {
+              sound.pause();
+              }
+            }
+
+            if(sound && play && !paused) {
+            if(sound['_duration'] === -1) {
+            setPlay(false);
+            setPaused(!paused);
+            }
+                playAudio();
+            }
+            else if(sound && !play && paused)
+                pause();
+//            else if(sound && !play && !paused)
+//                setPlay(true);
+      }, [sound, play, paused])
+
+    useEffect(() => {
+        async function recordAudio() {
+            setRecording(true);
+        }
+
+        if(recording)
+            recordAudio();
+    }, [recording])
 
     return (
         <View style={{ flex: 1 }}>
@@ -321,7 +416,17 @@ const PatientQn = (props) => {
                         )}
                         {currCategory === "descriptive" && (
                             <View style={styles.descriptiveContainer}>
-                                {/* <AudioRecorder2 /> */}
+                                <TouchableOpacity style={[styles.iconSearch, { left: 10 }]} onPress={() => setRecording(!recording)}>
+                                    <Feather name="mic" size={24} color={recording ? "blue" : "red"} />
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.iconSearch, { left: 40 }]} onPress={() => {
+                                setPlay(!play)
+                                setPaused(!paused)
+                                }}>
+                                {play == false ? <AntDesign name="playcircleo" size={24} color="black" />
+                                 : <FontAwesome6 name="circle-pause" size={24} color="black" />}
+                                 </TouchableOpacity>
+                                {recording !== null && <AudioRecorder2 recording={recording} setRecording={setRecording} setAudioFile={setAudioFile} setSound={setSound} setLoaded={setLoaded}/>}
                             </View>
                         )}
                         {currCategory === "range" && (
@@ -530,6 +635,12 @@ const styles = StyleSheet.create({
     },
     submitButtonText: {
         fontWeight: 'bold',
+    },
+    iconSearch: {
+        position: 'absolute',
+        top: '50%',
+        transform: [{ translateY: -12 }],
+        // backgroundColor: 'green',
     },
 });
 
