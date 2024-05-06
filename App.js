@@ -50,7 +50,7 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [URLMain, setURL] = useState("https://1844-103-156-19-229.ngrok-free.app");
+  const [URLMain, setURL] = useState("https://7d7f-103-156-19-229.ngrok-free.app");
   // const navigation = useNavigation();
   const Stack = createNativeStackNavigator();
 
