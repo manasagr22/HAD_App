@@ -157,8 +157,12 @@ export default function NavBarPatient(props) {
 
       <View style={styles.buttonsContainer}>
         <Text style={styles.titleText}>Hello, {patientName}</Text>
-        <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Questionnaire")}>
+        <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Prescription")}>
           <Text style={styles.buttonText}>Get Latest Follow Up</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Questionnaire")}>
+          <Text style={styles.buttonText} >Take Admin Qn</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buttonLogout} activeOpacity={1} onPress={() => props.navigate("Dashboard")}>

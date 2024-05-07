@@ -45,6 +45,25 @@ const PatientQn = (props) => {
         });
     };
 
+    const handledescriptive = (questionIndex, audio) => {
+        setResponses(prevResponses => {
+            const updatedResponses = [...prevResponses];
+            // Ensure the responses array has enough elements to accommodate the question index
+            while (updatedResponses.length <= questionIndex) {
+                updatedResponses.push({ qid: questionList[questionIndex].publicId });
+            }
+            // Update the response for the specified question index
+            updatedResponses[questionIndex] = { ...updatedResponses[questionIndex], subjAns: audio};
+            return updatedResponses;
+        }
+        );
+        props.setAlert({ type: "success", msg: "Audio Stored Successfully" });
+
+        setTimeout(() => {
+            props.setAlert(null);
+          }, 1800);
+    };
+
     const handleSelectRange = (value, questionIndex) => {
         setResponses(prevResponses => {
             const updatedResponses = [...prevResponses];
@@ -155,30 +174,6 @@ const PatientQn = (props) => {
             props.setAlert(null);
         }, 1800)
     };
-
-    const handleAudioSubmit  = async (qid) => {
-        const patientId = await AsyncStorage.getItem('patientId');
-
-        const URL = props.URL + "/fw/uploadDescMsg";
-
-        try{
-            const response = await fetch(URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + props.jwtToken,
-                },
-                body: JSON.stringify({
-                    pid: patientId,
-                    qid: qid,
-                    audio: audioFile
-                }),
-            })
-        }catch(err){
-            console.log(err);
-        }
-
-    }
 
     useEffect(() => {
         const load = () => {
@@ -451,13 +446,13 @@ const PatientQn = (props) => {
                                         {play == false ? <AntDesign name="playcircleo" size={24} color="black" />
                                             : <FontAwesome6 name="circle-pause" size={24} color="black" />}
                                     </TouchableOpacity>
-                                    {recording !== null && <AudioRecorder2 recording={recording} setRecording={setRecording} setAudioFile={setAudioFile} setSound={setSound} setLoaded={setLoaded} />}
+                                    {recording !== null && <AudioRecorder2 recording={recording} setRecording={setRecording} setAudioFile={setAudioFile} setSound={setSound} setLoaded={setLoaded} audioFile={audioFile} currQInd={currQInd} handledescriptive={handledescriptive}/>}
 
                                 </View>
-                                <TouchableOpacity style={styles.navButtonAudio} onPress={()=>handleAudioSubmit(questionList[currQInd].publicId)}>
+                                {/* <TouchableOpacity style={styles.navButtonAudio} onPress={()=>handledescriptive(currQInd, audioFile)}>
                                     <Text style={[styles.navButtonText, styles.submitButtonText]}>Submit Audio</Text>
 
-                                </TouchableOpacity>
+                                </TouchableOpacity> */}
                             </View>
 
                         )}

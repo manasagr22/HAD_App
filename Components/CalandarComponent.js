@@ -58,11 +58,11 @@ const CalendarComponent = (props) => {
     // Function to mark dates with appointments
     const markedDates = {};
     Object.keys(items).forEach((date) => {
-        markedDates[date] = { marked: true };
+      markedDates[date] = { marked: true };
     });
-
+    
+    markedDates[formattedToday] = {...markedDates[formattedToday], selected: true};
     // Mark today's date
-    markedDates[formattedToday] = { selected: true};
 
     useEffect(() => {
         if(formattedToday !== null){
@@ -74,7 +74,7 @@ const CalendarComponent = (props) => {
         <View style={styles.container}>
             <Calendar
                 // Mark dates with appointments
-                markedDates={{ ...markedDates, [props.currentSelectedDate]: { selected: true, selectedColor: 'maroon' } }}
+                markedDates={{ ...markedDates, [props.currentSelectedDate]: { selected: true, selectedColor: '#C172CF'} }}
                 // Callback that gets called when a date is pressed
                 onDayPress={(day) => {
                     props.setCurrentSelectedDate(day.dateString); 

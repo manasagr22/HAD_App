@@ -67,6 +67,7 @@ export default function AudioRecorder(props) {
       let audioFile = await AudioRecord.stop();
       const audioContent = await RNFS.readFile(audioFile, 'base64');
       props.setAudioFile(audioContent);
+      props.handledescriptive(props.currQInd, audioContent);
     }
 
 
