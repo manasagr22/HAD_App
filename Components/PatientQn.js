@@ -141,10 +141,11 @@ const PatientQn = (props) => {
                     qnName: 'adminQuestionnaire',
                     answers: responses
                 }),
-
             })
-            console.log(await response.text())
-            props.setAlert({ type: "success", msg: "Form Submitted Successfully" });
+            if(response.ok)
+                props.setAlert({ type: "success", msg: "Form Submitted Successfully" });
+            else
+                props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });    
 
         } catch (err) {
             props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });
@@ -243,11 +244,13 @@ const PatientQn = (props) => {
         }
 
         if (sound && play && !paused) {
+            console.log(sound)
             if (sound['_duration'] === -1) {
                 setPlay(false);
                 setPaused(!paused);
             }
-            playAudio();
+            else
+                playAudio();
         }
         else if (sound && !play && paused)
             pause();
