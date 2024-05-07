@@ -156,87 +156,111 @@ const PatientQn = (props) => {
         }, 1800)
     };
 
-    useEffect(() => {
-    const load = () => {
-        return new Promise((resolve, reject) => {
-            if(!audioFile) {
-                props.setAlert({type: "danger", msg: "Error while saving Audio"})
-                return reject('file path is empty');
-            }
+    const handleAudioSubmit  = async (qid) => {
+        const patientId = await AsyncStorage.getItem('patientId');
 
-            Sound.setCategory('Playback');
-            const directory = RNFS.DocumentDirectoryPath;
+        const URL = props.URL + "/fw/uploadDescMsg";
 
-                  const fileName = 'test1.wav';
-                  const filePath = `${directory}/${fileName}`;
-            RNFS.writeFile(filePath, audioFile, 'base64')
-
-            const s = new Sound(filePath, '', error => {
-                if(error) {
-                    props.setAlert({type: "danger", msg: "Error while saving Audio"})
-                    return reject(error);
-                }
+        try{
+            const response = await fetch(URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + props.jwtToken,
+                },
+                body: JSON.stringify({
+                    pid: patientId,
+                    qid: qid,
+                    audio: audioFile
+                }),
             })
+        }catch(err){
+            console.log(err);
+        }
 
-            setSound(s);
+    }
 
-            setLoaded(true);
-            return resolve();
-        })
-      }
+    useEffect(() => {
+        const load = () => {
+            return new Promise((resolve, reject) => {
+                if (!audioFile) {
+                    props.setAlert({ type: "danger", msg: "Error while saving Audio" })
+                    return reject('file path is empty');
+                }
 
-      const playAudio = async () => {
-        if(!loaded) {
-            try {
-                await load();
-            }
-            catch {
-               props.setAlert({type: "danger", msg: "Error while saving Audio"})
+                Sound.setCategory('Playback');
+                const directory = RNFS.DocumentDirectoryPath;
+
+                const fileName = 'test1.wav';
+                const filePath = `${directory}/${fileName}`;
+                RNFS.writeFile(filePath, audioFile, 'base64')
+
+                const s = new Sound(filePath, '', error => {
+                    if (error) {
+                        props.setAlert({ type: "danger", msg: "Error while saving Audio" })
+                        return reject(error);
+                    }
+                })
+
+                setSound(s);
+
+                setLoaded(true);
+                return resolve();
+            })
+        }
+
+        const playAudio = async () => {
+            if (!loaded) {
+                try {
+                    await load();
+                }
+                catch {
+                    props.setAlert({ type: "danger", msg: "Error while saving Audio" })
+                }
             }
         }
-      }
 
-      if(play && audioFile) {
-      playAudio();
-      }
-      }, [play, audioFile])
+        if (play && audioFile) {
+            playAudio();
+        }
+    }, [play, audioFile])
 
-      useEffect(() => {
-      async function playAudio() {
-      sound.play(success => {
-                  if(success) {
-//                      setLoaded(false)
-                      setPaused(true)
-                      setPlay(false);
-                  }
-              })
-      }
+    useEffect(() => {
+        async function playAudio() {
+            sound.play(success => {
+                if (success) {
+                    //                      setLoaded(false)
+                    setPaused(true)
+                    setPlay(false);
+                }
+            })
+        }
 
-      const pause = () => {
-            if(sound) {
-              sound.pause();
-              }
+        const pause = () => {
+            if (sound) {
+                sound.pause();
             }
+        }
 
-            if(sound && play && !paused) {
-            if(sound['_duration'] === -1) {
-            setPlay(false);
-            setPaused(!paused);
+        if (sound && play && !paused) {
+            if (sound['_duration'] === -1) {
+                setPlay(false);
+                setPaused(!paused);
             }
-                playAudio();
-            }
-            else if(sound && !play && paused)
-                pause();
-//            else if(sound && !play && !paused)
-//                setPlay(true);
-      }, [sound, play, paused])
+            playAudio();
+        }
+        else if (sound && !play && paused)
+            pause();
+        //            else if(sound && !play && !paused)
+        //                setPlay(true);
+    }, [sound, play, paused])
 
     useEffect(() => {
         async function recordAudio() {
             setRecording(true);
         }
 
-        if(recording)
+        if (recording)
             recordAudio();
     }, [recording])
 
@@ -415,19 +439,27 @@ const PatientQn = (props) => {
                             </View>
                         )}
                         {currCategory === "descriptive" && (
-                            <View style={styles.descriptiveContainer}>
-                                <TouchableOpacity style={[styles.iconSearch, { left: 10 }]} onPress={() => setRecording(!recording)}>
-                                    <Feather name="mic" size={24} color={recording ? "blue" : "red"} />
+                            <View >
+                                <View style={styles.descriptiveContainer}>
+                                    <TouchableOpacity style={[styles.iconSearch, { left: 10 }]} onPress={() => setRecording(!recording)}>
+                                        <Feather name="mic" size={24} color={recording ? "blue" : "red"} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.iconSearch, { left: 40 }]} onPress={() => {
+                                        setPlay(!play)
+                                        setPaused(!paused)
+                                    }}>
+                                        {play == false ? <AntDesign name="playcircleo" size={24} color="black" />
+                                            : <FontAwesome6 name="circle-pause" size={24} color="black" />}
+                                    </TouchableOpacity>
+                                    {recording !== null && <AudioRecorder2 recording={recording} setRecording={setRecording} setAudioFile={setAudioFile} setSound={setSound} setLoaded={setLoaded} />}
+
+                                </View>
+                                <TouchableOpacity style={styles.navButtonAudio} onPress={()=>handleAudioSubmit(questionList[currQInd].publicId)}>
+                                    <Text style={[styles.navButtonText, styles.submitButtonText]}>Submit Audio</Text>
+
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[styles.iconSearch, { left: 40 }]} onPress={() => {
-                                setPlay(!play)
-                                setPaused(!paused)
-                                }}>
-                                {play == false ? <AntDesign name="playcircleo" size={24} color="black" />
-                                 : <FontAwesome6 name="circle-pause" size={24} color="black" />}
-                                 </TouchableOpacity>
-                                {recording !== null && <AudioRecorder2 recording={recording} setRecording={setRecording} setAudioFile={setAudioFile} setSound={setSound} setLoaded={setLoaded}/>}
                             </View>
+
                         )}
                         {currCategory === "range" && (
                             <View style={styles.rangeContainer}>
@@ -572,6 +604,7 @@ const styles = StyleSheet.create({
     },
 
     descriptiveContainer: {
+
         marginTop: 16,
     },
     answerLabel: {
@@ -616,6 +649,16 @@ const styles = StyleSheet.create({
         gap: 60,
         justifyContent: 'center',
         marginTop: 20,
+    },
+    navButtonAudio: {
+        height: '50%',
+        width: '25%',
+        backgroundColor: '#007AFF',
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft:"40%", 
+        marginTop: "auto"
     },
     navButton: {
         height: '50%',
