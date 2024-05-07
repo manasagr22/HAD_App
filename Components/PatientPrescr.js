@@ -10,9 +10,66 @@ import { Feather } from "@expo/vector-icons";
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
 
-const PatientPrescr = () => {
+const PatientPrescr = (props) => {
+
+    const [taskId, setTaskId] = useState(null);
+
+
+    // useEffect(() => {
+
+    //     const fetchtask = async () => {
+    //         const key = "Bearer " + props.jwtToken;
+    //         const patientId = await AsyncStorage.getItem('patientId');
+
+    //        const URL = props.URL + '/fw/checkFollowUp'
+
+    //        const params = new URLSearchParams({
+    //         id: patientId,
+    //     }).toString();
+
+    //     const url = `${URL}?${params}`;
+
+    //         try{
+    //             const result = await fetch(url, {
+    //                 method: "GET",
+    //                 headers: {
+    //                     "Content-Type": "application/json",
+    //                     Authorization: key,
+    //                 },
+    //             }).then((res) => res.json());
+
+    //             setTaskId(result.task_id);
+    //         }catch(err){
+    //             console.error("Error fetching data:", error);
+    //         }
+    //     }
+
+    //     fetchtask();
+    // }, []);
+
+    const doneTask = async() => {
+        // call complete task
+
+        const url = props.URL + '/fw/completeTask'
+        const key = "Bearer " + props.jwtToken
+        try{
+            const response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: key,
+                },
+                body: JSON.stringify({
+                    id: taskId,
+                }),
+            })
+        }catch(err){
+            console.log("Error Posting: ", err)
+        }
+    }
+
     return (
-        <View style={{ flex: 1, alignSelf: 'flex-center' }}>
+        <View style={{ flex: 1, flexDirection: 'column', alignItems: 'center' }}>
             <Text
                 style={{
                     marginBottom: 20,
@@ -27,75 +84,80 @@ const PatientPrescr = () => {
             </Text>
 
             <ScrollView style={styles.container}>
-                    <View>
+                <View>
+                    <Text style={{
+                        fontSize: 22,
+                        fontWeight: "bold",
+                        textAlign: "start",
+                        color: "#686868",
+                    }}>Medicine</Text>
+                    {/* medicine text */}
+                    <View style={styles.prescontainer}>
                         <Text style={{
-                            fontSize: 22,
-                            fontWeight: "bold",
+                            fontSize: 19,
+                            fontWeight: 500,
                             textAlign: "start",
-                            color: "#686868",
-                        }}>Medicine</Text>
-                        {/* medicine text */}
-                        <View style={styles.prescontainer}>
-                            <Text style={{
-                                fontSize: 19,
-                                fontWeight: 500,
-                                textAlign: "start",
-                                color: "#c2833",
-                            }}>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                            color: "#c2833",
+                        }}>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco l
-                        
-                            </Text>
-                        </View>
-                    </View> 
 
-                    <View>
-                        <Text style={{
-                            fontSize: 22,
-                            fontWeight: "bold",
-                            textAlign: "start",
-                            color: "#686868",
-                            marginTop: 20
-                        }}>Tests</Text>
-                        {/* medicine text */}
-                        <View style={styles.prescontainer}>
-                            <Text style={{
-                                fontSize: 19,
-                                fontWeight: 500,
-                                textAlign: "start",
-                                color: "#c2833",
-                            }}>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco l
-                        
-                            </Text>
-                        </View>
-                    </View> 
+                        </Text>
+                    </View>
+                </View>
 
-                    <View>
+                <View>
+                    <Text style={{
+                        fontSize: 22,
+                        fontWeight: "bold",
+                        textAlign: "start",
+                        color: "#686868",
+                        marginTop: 20
+                    }}>Tests</Text>
+                    {/* medicine text */}
+                    <View style={styles.prescontainer}>
                         <Text style={{
-                            fontSize: 22,
-                            fontWeight: "bold",
+                            fontSize: 19,
+                            fontWeight: 500,
                             textAlign: "start",
-                            color: "#686868",
-                            marginTop: 20,
-                            marginBottom: 20
-                        }}>Precautions</Text>
-                        {/* medicine text */}
-                        <View style={styles.prescontainer}>
-                            <Text style={{
-                                fontSize: 19,
-                                fontWeight: 500,
-                                textAlign: "start",
-                                color: "#c2833",
-                            }}>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                            color: "#c2833",
+                        }}>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
                             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco l
-                        
-                            </Text>
-                        </View>
-                    </View> 
+
+                        </Text>
+                    </View>
+                </View>
+
+                <View>
+                    <Text style={{
+                        fontSize: 22,
+                        fontWeight: "bold",
+                        textAlign: "start",
+                        color: "#686868",
+                        marginTop: 20,
+                        marginBottom: 20
+                    }}>Precautions</Text>
+                    {/* medicine text */}
+                    <View style={styles.prescontainer}>
+                        <Text style={{
+                            fontSize: 19,
+                            fontWeight: 500,
+                            textAlign: "start",
+                            color: "#c2833",
+                        }}>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco l
+
+                        </Text>
+                    </View>
+                </View>
+
+
+
             </ScrollView>
 
 
-
+            <TouchableOpacity style={[styles.navButton, styles.submitButton]} onPress={doneTask}>
+                <Text style={[styles.navButtonText, styles.submitButtonText]}>Done Task</Text>
+            </TouchableOpacity>
 
         </View>
 
@@ -129,7 +191,7 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 5,
         padding: 20
-        
+
     },
     prescontainer: {
         backgroundColor: '#f0f3f4',
@@ -138,9 +200,26 @@ const styles = StyleSheet.create({
         borderRadius: 24,
         marginTop: 5,
         marginBottom: 20,
-        
-
-    }
+    },
+    navButton: {
+        height: '7%',
+        width: '10%',
+        backgroundColor: '#007AFF',
+        borderRadius: 8,
+        marginTop: '36%',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    navButtonText: {
+        color: '#fff',
+        fontSize: 16,
+    },
+    submitButton: {
+        backgroundColor: 'green', // Green color
+    },
+    submitButtonText: {
+        fontWeight: 'bold',
+    },
 })
 
 export default PatientPrescr;

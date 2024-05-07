@@ -238,6 +238,7 @@ const PatientQn = (props) => {
         }
 
         if (sound && play && !paused) {
+            console.log(sound)
             if (sound['_duration'] === -1) {
                 setPlay(false);
                 setPaused(!paused);

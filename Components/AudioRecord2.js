@@ -15,7 +15,7 @@ export default function AudioRecorder(props) {
   //
   useEffect(() => {
     async function initAudio() {
-      //      await checkPermission();
+      await checkPermission();
       const options = {
         sampleRate: 16000,
         channels: 1,
@@ -65,6 +65,7 @@ export default function AudioRecorder(props) {
 
     const stop = async () => {
       let audioFile = await AudioRecord.stop();
+      console.log(audioFile);
       const audioContent = await RNFS.readFile(audioFile, 'base64');
       props.setAudioFile(audioContent);
       props.handledescriptive(props.currQInd, audioContent);
