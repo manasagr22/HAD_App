@@ -114,6 +114,9 @@ export default function RegisterPatient(props) {
                 console.log("Teri maa ki chut")
                 props.navigate("Login")
             }
+            setTimeout(() => {
+                props.setAlert(null);
+            }, 1800)
         }
 
         if(district === "" && props.jwtToken)
@@ -145,6 +148,9 @@ export default function RegisterPatient(props) {
                 console.log("Teri maa ki chut 2")
                 props.navigate("Login")
             }
+            setTimeout(() => {
+                props.setAlert(null);
+            }, 1800)
         }
 
         if(subdiv === "" && props.jwtToken)
