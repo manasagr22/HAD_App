@@ -1,0 +1,9 @@
+version: "2"
+authtoken: 2VoO6xkcELL6lgT1NdKnFsxwdLw_889LriSoUjPx1HQ6Lx5Rp
+tunnels:
+ first:
+  addr: 8082
+  proto: http
+ second:
+  addr: 8083
+  proto: http

@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PropsWithChildren } from 'react';
-import { Keyboard, LogBox, TouchableWithoutFeedback } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Calendar, LocaleConfig, Agenda } from 'react-native-calendars';
 import {
   Dimensions,
   Image,
@@ -16,7 +13,7 @@ import {
   Text,
   useColorScheme,
   View,
-  TouchableOpacity,
+  LogBox
 } from 'react-native';
 
 import {
@@ -48,6 +45,8 @@ import PatientPrescr from './Components/PatientPrescr';
 import Appointment from './Components/Appointent';
 import DoctorQn from './Components/DoctorQn';
 import moment from 'moment';
+import Inbox from './Components/Inbox';
+
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   LogBox.ignoreLogs(['new NativeEventEmitter']);
@@ -62,7 +61,6 @@ function App() {
   const [taskList, setTaskList] = useState(null);
   const [currTask, setCurrTask]  = useState(null);
 
-  
   // const navigation = useNavigation();
   const Stack = createNativeStackNavigator();
 
@@ -115,14 +113,12 @@ function App() {
               await storeData("/", jwtToken)
             }
             else {
-              console.log("Clearing...")
               clear();
             }
           }
         }
         catch {
-          console.log("Clearing...Error")
-          clear();
+          // clear();
         }
       }
     }
@@ -150,24 +146,24 @@ function App() {
                 {() => <LoginFW URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} setJwtToken={setJwtToken} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
               <Stack.Screen name="Dashboard">
-                {() => <DashboardParent URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} taskList={taskList} setTaskList={setTaskList} currTask={currTask} setCurrTask={setCurrTask} currDayTaskList={currDayTaskList} setcurrDayTaskList={setcurrDayTaskList}/>}
+                {() => <DashboardParent fwNotification={fwNotification} setFwNotification={setFwNotification} URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} taskList={taskList} setTaskList={setTaskList} currTask={currTask} setCurrTask={setCurrTask} currDayTaskList={currDayTaskList} setcurrDayTaskList={setcurrDayTaskList} />}
               </Stack.Screen>
               <Stack.Screen name='Chat'>
-                {() => <Chatting URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <Chatting fwNotification={fwNotification} setFwNotification={setFwNotification} URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
               <Stack.Screen name='Register'>
-                {() => <Register URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <Register fwNotification={fwNotification} setFwNotification={setFwNotification} URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
               <Stack.Screen name='Login Patient'>
-                {() => <LoginPat URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <LoginPat fwNotification={fwNotification} setFwNotification={setFwNotification} URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
 
               <Stack.Screen name='Patient Questionnaire'>
-                {() => <PatientQuesn URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <PatientQuesn fwNotification={fwNotification} setFwNotification={setFwNotification} URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
 
               <Stack.Screen name='Patient Prescription'>
-                {() => <PatientPrescription URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} currTask={currTask}/>}
+                {() => <PatientPrescription fwNotification={fwNotification} setFwNotification={setFwNotification} URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} currTask={currTask} />}
               </Stack.Screen>
 
               <Stack.Screen name='Patient Appointment'>
@@ -179,7 +175,15 @@ function App() {
               </Stack.Screen>
 
               <Stack.Screen name='LoggedIn Patient'>
-                {() => <LoggedPat URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <LoggedPat fwNotification={fwNotification} setFwNotification={setFwNotification} URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+              </Stack.Screen>
+
+              <Stack.Screen name="Inbox">
+                {() => <Inbox1 fwNotification={fwNotification} setFwNotification={setFwNotification} URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+              </Stack.Screen>
+
+              <Stack.Screen name="InboxPatient">
+                {() => <InboxPatient1 fwNotification={fwNotification} setFwNotification={setFwNotification} URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
               </Stack.Screen>
 
 
@@ -304,7 +308,7 @@ const DashboardParent = (props) => {
 
   }, []);
 
-  
+
 
   const navigation = useNavigation();
   const [selected, setSelected] = useState('');
@@ -338,7 +342,7 @@ const DashboardParent = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
+        <NavBar fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
         <View style={{flex: 1, flexDirection: 'row'}}>
           <CalendarComponent currentSelectedDate={currentSelectedDate} setCurrentSelectedDate={setCurrentSelectedDate} taskList={props.taskList} currDayTaskList={props.currDayTaskList}/>
@@ -382,7 +386,7 @@ const Register = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
+        <NavBar fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
         <ScrollView ref={scrollViewRef}>
           <RegisterPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} scrollViewRef={scrollViewRef} />
         </ScrollView>
@@ -398,7 +402,7 @@ const LoginPat = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <NavBar URL={props.URL} fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
         <ScrollView>
           <LoginPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
         </ScrollView>
@@ -437,7 +441,7 @@ const Chatting = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBar navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <NavBar URL={props.URL} fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
         <Chat URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
       </View>
     </View>
@@ -474,7 +478,7 @@ const LoggedPat = (props) => {
     {props.alert ? <Alert alert={props.alert} /> : undefined}
     <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height, alignItems: 'center' }}>
 
-      <NavBarPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
+      <NavBarPatient fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
       <View style={styles.boxcontainer}>
         <Text style={styles.welcomeText}>Welcome to</Text>
@@ -513,7 +517,7 @@ const PatientQuesn = (props) => {
   return (
     <View style={[styles.background, styles.container]}>
 
-      <NavBarPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
+      <NavBarPatient fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
 
       {props.load ? <Spinner /> : undefined}
@@ -558,14 +562,14 @@ const PatientPrescription = (props) => {
   return (
     <View style={[styles.background, styles.container]}>
 
-      <NavBarPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} currTask={props.currTask}/>
+      <NavBarPatient fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} currTask={props.currTask} />
 
 
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
 
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <PatientPrescr URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} currTask={props.currTask}/>
+        <PatientPrescr URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} currTask={props.currTask} />
 
       </View>
 
@@ -573,7 +577,7 @@ const PatientPrescription = (props) => {
 
     </View>
   )
-  
+
 }
   const PatientAppointment = (props) => {
     const [isKeyboardVisible, setKeyboardVisible] = useState([false, 0]);
@@ -613,11 +617,83 @@ const PatientPrescription = (props) => {
   
         </View>
   
-  
-  
       </View>
-    )
-  }
+  )
+}
+
+const Inbox1 = (props) => {
+  const [isKeyboardVisible, setKeyboardVisible] = useState([false, 0]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      ({ endCoordinates }) => {
+        setKeyboardVisible([true, endCoordinates.height]);
+        const keyboardHeight = Dimensions.get('window').height - endCoordinates.screenY;
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible([false, 0]);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
+  return (
+    <View style={[styles.background, styles.container]}>
+      {props.load ? <Spinner /> : undefined}
+      {props.alert ? <Alert alert={props.alert} /> : undefined}
+      <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
+        <NavBar fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <Inbox fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
+      </View>
+    </View>
+  )
+}
+
+const InboxPatient1 = (props) => {
+  const [isKeyboardVisible, setKeyboardVisible] = useState([false, 0]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      ({ endCoordinates }) => {
+        setKeyboardVisible([true, endCoordinates.height]);
+        const keyboardHeight = Dimensions.get('window').height - endCoordinates.screenY;
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible([false, 0]);
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };
+  }, []);
+
+  return (
+    <View style={[styles.background, styles.container]}>
+      {props.load ? <Spinner /> : undefined}
+      {props.alert ? <Alert alert={props.alert} /> : undefined}
+      <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
+        <NavBarPatient fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <Inbox fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
+      </View>
+    </View>
+  )
+}
 
 
   const DoctorQuesn = (props) => {

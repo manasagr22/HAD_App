@@ -1,0 +1,36 @@
+[
+    {
+        "type": "Prescription",
+        "description": "Prescription for John Doe has been uploaded",
+        "medicine": "Paracetamol",
+        "days": 7,
+        "test": "Blood Test",
+        "precaution": "Take after meal",
+        "PId": 101,
+        "date": "2023-01-01",
+        "time": "10:00:00",
+        "appointment": "Dr. Smith",
+        "question": "How are you feeling today?",
+        "duration": 30,
+        "name": "John Doe",
+        "deadline": "2023-01-01T12:00:00"
+    },
+    {
+        "type": "Appointment",
+        "description": "Appointment for Jane Doe has been scheduled",
+        "PId": 102,
+        "date": "2023-01-02",
+        "time": "14:00:00",
+        "name": "Jane Doe",
+        "deadline": "2023-01-01T12:00:00"
+    },
+    {
+        "type": "Questionnaire",
+        "description": "Questionnaire for John Doe has been uploaded",
+        "PId": 101,
+        "question": "How are you feeling today?",
+        "duration": 15,
+        "name": "John Doe",
+        "deadline": "2023-01-01T12:00:00"
+    }
+]
