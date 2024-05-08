@@ -63,14 +63,25 @@ const PatientPrescr = (props) => {
                     Authorization: key,
                 },
                 body: JSON.stringify({
-                    id: props.currTask.task_id,
-                    aabhaId: props.currTask.patientName
+                    id: parseInt(props.currTask.id),
+                    timestamp: new Date().toISOString(),
+                    // aabhaId: props.currTask.name
                 }),
             })
 
-            props.setAlert({ type: "success", msg: "Task Done Successfully" })
+            console.log(JSON.stringify({
+                id: parseInt(props.currTask.id),
+                timestamp: new Date().toISOString(),
+                // aabhaId: props.currTask.name
+            }))
+
+                console.log(response.data);
+                
+                    props.setAlert({ type: "success", msg: "Task Done Successfully" })
+                    props.navigate("Dashboard")
+                
+            
             // navigate to dashboard
-            props.navigate("Dashboard")
 
             setTimeout(() => {
                 props.setAlert(null);
@@ -93,7 +104,7 @@ const PatientPrescr = (props) => {
                     color: "#686868",
                 }}
             >
-                Current Prescription
+                Current Prescription for: {props.currTask.name}
             </Text>
 
             <ScrollView style={styles.container}>
@@ -109,9 +120,8 @@ const PatientPrescr = (props) => {
                         <Text style={{
                             fontSize: 19,
                             fontWeight: 500,
-                            textAlign: "start",
                             color: "#c2833",
-                        }}>{props.currTask.medicine}
+                        }}>{props.currTask.medicine} for {props.currTask.days}
 
                         </Text>
                     </View>
@@ -121,7 +131,7 @@ const PatientPrescr = (props) => {
                     <Text style={{
                         fontSize: 22,
                         fontWeight: "bold",
-                        textAlign: "start",
+                       
                         color: "#686868",
                         marginTop: 20
                     }}>Tests</Text>
@@ -130,10 +140,9 @@ const PatientPrescr = (props) => {
                         <Text style={{
                             fontSize: 19,
                             fontWeight: 500,
-                            textAlign: "start",
+                           
                             color: "#c2833",
-                        }}>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco l
+                        }}>{props.currTask.test}
 
                         </Text>
                     </View>
@@ -143,7 +152,7 @@ const PatientPrescr = (props) => {
                     <Text style={{
                         fontSize: 22,
                         fontWeight: "bold",
-                        textAlign: "start",
+                   
                         color: "#686868",
                         marginTop: 20,
                         marginBottom: 20
@@ -155,8 +164,7 @@ const PatientPrescr = (props) => {
                             fontWeight: 500,
                             textAlign: "start",
                             color: "#c2833",
-                        }}>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco l
+                        }}>{props.currTask.precaution}
 
                         </Text>
                     </View>

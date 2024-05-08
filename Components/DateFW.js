@@ -16,48 +16,88 @@ const DateFW = (props) => {
     
 
 
-    const [currDayTaskList, setcurrTasksList] = useState([
-        {
-          "task_id": 1,
-          "type": "prescription",
-          "deadline": "2024-05-10",
-          "date": "2024-05-06",
-          'patientName': 'Mukul Bhosdiwala',
-          "description": "Complete project proposal",
-          "medicine": "Beer pee BC"
-        },
-        {
-          "task_id": 2,
-          "type": "work",
-          "deadline": "2024-05-08",
-          "date": "2024-05-06",
-          "description": "Send follow-up emails"
-        },
-        {
-          "task_id": 3,
-          "type": "personal",
-          "deadline": "2024-05-12",
-          "date": "2024-05-07",
-          "description": "Review project draft"
-        },
-        {
-          "task_id": 4,
-          "type": "work",
-          "deadline": "2024-05-10",
-          "date": "2024-05-07",
-          "description": "Attend team meeting"
-        }
-      ]
+    // const [currDayTaskList, setcurrTasksList] = useState([
+    //     {
+    //       "task_id": 1,
+    //       "type": "prescription",
+    //       "deadline": "2024-05-10",
+    //       "date": "2024-05-06",
+    //       'patientName': 'Mukul Bhosdiwala',
+    //       "description": "Complete project proposal",
+    //       "medicine": "Beer pee BC"
+    //     },
+    //     {
+    //       "task_id": 2,
+    //       "type": "work",
+    //       "deadline": "2024-05-08",
+    //       "date": "2024-05-06",
+    //       "description": "Send follow-up emails"
+    //     },
+    //     {
+    //       "task_id": 3,
+    //       "type": "personal",
+    //       "deadline": "2024-05-12",
+    //       "date": "2024-05-07",
+    //       "description": "Review project draft"
+    //     },
+    //     {
+    //       "task_id": 4,
+    //       "type": "work",
+    //       "deadline": "2024-05-10",
+    //       "date": "2024-05-07",
+    //       "description": "Attend team meeting"
+    //     }
+    //   ]
       
-    )
+    // )
 
 
 
     useEffect(() => {
         // change curr task list from backend
         // from currDate
+
+        const fetchCurrDateTasks = async () => {
+
+
+            const URL = props.URL + '/fw/viewAllTasksByDate'
+
+            const key = "Bearer " + props.jwtToken;
+            const params = new URLSearchParams({
+                date: currDate,
+            }).toString();
+            const url = `${URL}?${params}`;
+
+            try{
+                if(currDate.length > 0){
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: key,
+                    },
+                }).then(res => res.json());
+            
+
+                props.setcurrDayTaskList(response);
+                console.log('hello ', props.currDayTaskList)
+                
+                
+            }
+
+            }catch(e){
+                console.log("MAA chud gayi")
+                props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+                console.log(e)
+            }
+        }
         
-        props.setcurrDayTaskList()
+
+        fetchCurrDateTasks();
+
+        setTimeout(() => {
+            props.setAlert(null);
+        }, 1800)
         
     }, [currDate]);
 
@@ -74,13 +114,13 @@ const DateFW = (props) => {
             setcurrInd(currInd + 1);
         }
     }
-    const [currentPage, setCurrentPage] = useState(0);
-    const cardsPerPage = 4;
+    // const [currentPage, setCurrentPage] = useState(0);
+    // const cardsPerPage = 4;
 
-    const totalPages = Math.ceil(currDayTaskList.length / cardsPerPage);
-    const startIndex = currInd * cardsPerPage;
-    const endIndex = startIndex + cardsPerPage;
-    // const currentTasks = tasksList.slice(startIndex, endIndex);
+    // const totalPages = Math.ceil(props.currDayTaskList.length / cardsPerPage);
+    // const startIndex = currInd * cardsPerPage;
+    // const endIndex = startIndex + cardsPerPage;
+    // // const currentTasks = tasksList.slice(startIndex, endIndex);
 
 
 
@@ -105,10 +145,10 @@ const DateFW = (props) => {
 
                 {/* tasks list */}
                 <View style={{ flex: 1, zIndex: 1 }}>
-                    {currDayTaskList.length > 0 ? <FlatList
-                        data={currDayTaskList}
+                    {(props.currDayTaskList).length > 0 ? <FlatList
+                        data={props.currDayTaskList}
                         renderItem={({ item }) => <TaskCard task={item} setCurrTask={props.setCurrTask}/>}
-                        keyExtractor={(item) => item.task_id.toString()}
+                        keyExtractor={(item) => item.id.toString()}
                     /> : <View><Text style={{
                         marginBottom: 10,
                         

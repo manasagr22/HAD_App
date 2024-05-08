@@ -2,19 +2,42 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import CheckBox from "./CheckBox";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import moment from "moment";
 const TaskCard = (props) => {
-  const id = props.task.task_id;
+  const id = props.task.id;
   const navigation = useNavigation();
+
+  const deadlineDateString = props.task.deadline;
+  console.log('bc:', props.task)
+
+  // Parse the date string using moment
+  const deadlineDate = moment(deadlineDateString);
+
+  // Format the date as "D MMM YYYY"
+  const formattedDate = deadlineDate.format('D MMM YYYY');
 
   const completeTask = () => {
     // Call an API to remove the task
     // For demonstration, I'll just call the onRemoveTask function passed from the parent component
     props.setCurrTask(props.task);
 
-    if(props.task.type === 'prescription'){
-      console.log('Prescription');
-      navigation.navigate("Patient Prescription");
+    if(props.task.type !== undefined){
+      if( props.task.type === 'prescription'){
+        console.log('Prescription');
+        navigation.navigate("Patient Prescription");
+      }
+      else if( props.task.type === 'appointment_for_field_worker'){
+        console.log('Appointment');
+        navigation.navigate("Patient Appointment");
+      }
+      else if(props.task.type === 'questionnaire'){
+        console.log('QN');
+        navigation.navigate("Doctor Questionnaire");
+      }
     }
+
+
+    
 
   };
 
@@ -28,15 +51,19 @@ const TaskCard = (props) => {
         </View>
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <Text style={styles.title}>Deadline: </Text>
-          <Text style={styles.description}>{props.task.deadline}</Text>
+          <Text style={styles.description}>{formattedDate}</Text>
         </View>
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <Text style={styles.title}>Patient Name: </Text>
-          <Text style={styles.description}>{props.task.deadline}</Text>
+          <Text style={styles.description}>{props.task.name}</Text>
         </View>
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <Text style={styles.title}>Patient Address: </Text>
-          <Text style={styles.description}>{props.task.deadline}</Text>
+          <Text style={styles.description}>{props.task.address}</Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'row' }}>
+          <Text style={styles.title}>Description: </Text>
+          <Text style={styles.description}>{props.task.description}</Text>
         </View>
 
         {/* Complete Task */}
@@ -68,7 +95,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
-    paddingBottom: 50
+    paddingBottom: 60
   },
   title: {
     fontSize: 18,
@@ -76,6 +103,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   description: {
+    flex: 1,
     fontSize: 18,
     color: '#666666',
   },

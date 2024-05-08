@@ -46,7 +46,8 @@ import DatePatient from './Components/DateFW';
 import DateFW from './Components/DateFW';
 import PatientPrescr from './Components/PatientPrescr';
 import Appointment from './Components/Appointent';
-
+import DoctorQn from './Components/DoctorQn';
+import moment from 'moment';
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   LogBox.ignoreLogs(['new NativeEventEmitter']);
@@ -54,40 +55,11 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [URLMain, setURL] = useState("https://5d91-119-161-98-68.ngrok-free.app");
+  const [URLMain, setURL] = useState("https://a151-119-161-98-68.ngrok-free.app");
 
-  const [currDayTaskList, setcurrDayTaskList] = useState(null);
+  const [currDayTaskList, setcurrDayTaskList] = useState([]);
 
-  const [taskList, setTaskList] = useState([
-    {
-      "task_id": 1,
-      "type": "prescription",
-      "deadline": "2024-05-10",
-      "date": "2024-05-06",
-      "description": "Complete project proposal"
-    },
-    {
-      "task_id": 2,
-      "type": "work",
-      "deadline": "2024-05-08",
-      "date": "2024-05-06",
-      "description": "Send follow-up emails"
-    },
-    {
-      "task_id": 3,
-      "type": "personal",
-      "deadline": "2024-05-12",
-      "date": "2024-05-07",
-      "description": "Review project draft"
-    },
-    {
-      "task_id": 4,
-      "type": "work",
-      "deadline": "2024-05-10",
-      "date": "2024-05-07",
-      "description": "Attend team meeting"
-    }
-  ]);
+  const [taskList, setTaskList] = useState(null);
   const [currTask, setCurrTask]  = useState(null);
 
   
@@ -199,7 +171,11 @@ function App() {
               </Stack.Screen>
 
               <Stack.Screen name='Patient Appointment'>
-                {() => <PatientAppointment URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} />}
+                {() => <PatientAppointment URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} currTask={currTask}/>}
+              </Stack.Screen>
+
+              <Stack.Screen name='Doctor Questionnaire'>
+                {() => <DoctorQuesn URL={URLMain} load={load} setLoad={setLoad} alert={alert} setAlert={setAlert} jwtToken={jwtToken} getData={getData} storeData={storeData} currTask={currTask}/>}
               </Stack.Screen>
 
               <Stack.Screen name='LoggedIn Patient'>
@@ -284,6 +260,47 @@ const DashboardParent = (props) => {
     // to get task list
     // view all tasks
 
+    const fetchAllTasks = async () => {
+
+    const url = props.URL + '/fw/viewAllTasks'
+
+    try{
+      const key = "Bearer " + props.jwtToken;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": key
+        }
+      }).then((res)=> res.json())
+
+      let tasksByDate = {};
+
+// Iterate through the taskList array and organize tasks by date
+    response.forEach(task => {
+      const deadlineDateString = task.deadline;
+      // Parse the date string using moment
+      const deadlineDate = moment(deadlineDateString);
+    
+      // Format the date as "YYYY-MM-DD"
+      const date = deadlineDate.format('YYYY-MM-DD');
+      if (!tasksByDate[date]) {
+        tasksByDate[date] = [];
+      }
+      tasksByDate[date].push(task);
+    });
+
+    props.setTaskList(tasksByDate)
+
+      
+    }catch(err){
+      props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+      console.log(err)
+    }
+  }
+
+    fetchAllTasks();
+
 
   }, []);
 
@@ -324,8 +341,8 @@ const DashboardParent = (props) => {
         <NavBar URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
         <View style={{flex: 1, flexDirection: 'row'}}>
-          <CalendarComponent currentSelectedDate={currentSelectedDate} setCurrentSelectedDate={setCurrentSelectedDate} taskList={props.taskList}/>
-          <DateFW currentSelectedDate={currentSelectedDate} currTask={props.currTask} setCurrTask={props.setCurrTask} currDayTaskList={props.currDayTaskList} setcurrDayTaskList={props.setcurrDayTaskList}/>
+          <CalendarComponent currentSelectedDate={currentSelectedDate} setCurrentSelectedDate={setCurrentSelectedDate} taskList={props.taskList} currDayTaskList={props.currDayTaskList}/>
+          <DateFW currentSelectedDate={currentSelectedDate} currTask={props.currTask} setCurrTask={props.setCurrTask} currDayTaskList={props.currDayTaskList} setcurrDayTaskList={props.setcurrDayTaskList} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
         </View>
 
       </View>
@@ -503,7 +520,7 @@ const PatientQuesn = (props) => {
       {props.alert ? <Alert alert={props.alert} /> : undefined}
 
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <PatientQn URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
+        <PatientQn URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} currTask={props.currTask}/>
 
       </View>
 
@@ -592,7 +609,7 @@ const PatientPrescription = (props) => {
         {props.alert ? <Alert alert={props.alert} /> : undefined}
   
         <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-          <Appointment URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
+          <Appointment URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} currTask={props.currTask}/>
   
         </View>
   
@@ -601,6 +618,53 @@ const PatientPrescription = (props) => {
       </View>
     )
   }
+
+
+  const DoctorQuesn = (props) => {
+    const [isKeyboardVisible, setKeyboardVisible] = useState([false, 0]);
+    const navigation = useNavigation();
+  
+    useEffect(() => {
+      const keyboardDidShowListener = Keyboard.addListener(
+        'keyboardDidShow',
+        ({ endCoordinates }) => {
+          setKeyboardVisible([true, endCoordinates.height]);
+          const keyboardHeight = Dimensions.get('window').height - endCoordinates.screenY;
+        }
+      );
+      const keyboardDidHideListener = Keyboard.addListener(
+        'keyboardDidHide',
+        () => {
+          setKeyboardVisible([false, 0]);
+        }
+      );
+  
+      return () => {
+        keyboardDidHideListener.remove();
+        keyboardDidShowListener.remove();
+      };
+    }, []);
+    return (
+      <View style={[styles.background, styles.container]}>
+  
+        <NavBarPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+  
+  
+        {props.load ? <Spinner /> : undefined}
+        {props.alert ? <Alert alert={props.alert} /> : undefined}
+  
+        <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
+          <DoctorQn URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} currTask={props.currTask}/>
+  
+        </View>
+  
+  
+  
+      </View>
+    )
+  }
+
+  
 
 
 const styles = StyleSheet.create({
