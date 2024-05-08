@@ -1,10 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { PropsWithChildren } from 'react';
-import { Keyboard, LogBox, TouchableWithoutFeedback } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import { Keyboard, TouchableWithoutFeedback } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Calendar, LocaleConfig, Agenda } from 'react-native-calendars';
 import {
   Dimensions,
   Image,
@@ -16,7 +13,6 @@ import {
   Text,
   useColorScheme,
   View,
-  TouchableOpacity,
 } from 'react-native';
 
 import {
@@ -55,7 +51,8 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [URLMain, setURL] = useState("https://da57-103-156-19-229.ngrok-free.app");
+//  const [URLMain, setURL] = useState("https://d8db-119-161-98-68.ngrok-free.app");
+  const [URLMain, setURL] = useState("https://d8db-119-161-98-68.ngrok-free.app");
 
   const [currDayTaskList, setcurrDayTaskList] = useState(null);
   const [fwNotification, setFwNotification] = useState(null);
