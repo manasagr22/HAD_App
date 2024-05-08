@@ -145,14 +145,12 @@ function App() {
               await storeData("/", jwtToken)
             }
             else {
-              console.log("Clearing...")
               clear();
             }
           }
         }
         catch {
-          console.log("Clearing...Error")
-          clear();
+          // clear();
         }
       }
     }
