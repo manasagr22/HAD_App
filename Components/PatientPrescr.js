@@ -9,12 +9,16 @@ import AudioRecorder2 from "./AudioRecord2";
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from '@expo/vector-icons';
 import { FontAwesome6 } from '@expo/vector-icons';
+import MyTextInput from "./TextInput";
 
 const PatientPrescr = (props) => {
+    const [aabha, setaabha] = useState('');
 
-    const [taskId, setTaskId] = useState(null);
+    const onChangeText = (inputText) => {
+      setText(inputText);
+    };
 
-
+    console.log("Hellloo", props.currTask)
     // useEffect(() => {
 
     //     const fetchtask = async () => {
@@ -24,7 +28,7 @@ const PatientPrescr = (props) => {
     //        const URL = props.URL + '/fw/checkFollowUp'
 
     //        const params = new URLSearchParams({
-    //         id: patientId,
+    //         id: parseInt(patientId),
     //     }).toString();
 
     //     const url = `${URL}?${params}`;
@@ -38,21 +42,20 @@ const PatientPrescr = (props) => {
     //                 },
     //             }).then((res) => res.json());
 
-    //             setTaskId(result.task_id);
     //         }catch(err){
     //             console.error("Error fetching data:", error);
     //         }
     //     }
 
     //     fetchtask();
-    // }, []);
+    // }, [props.jwtToken]);
 
-    const doneTask = async() => {
+    const doneTask = async () => {
         // call complete task
 
         const url = props.URL + '/fw/completeTask'
         const key = "Bearer " + props.jwtToken
-        try{
+        try {
             const response = await fetch(url, {
                 method: "POST",
                 headers: {
@@ -60,10 +63,20 @@ const PatientPrescr = (props) => {
                     Authorization: key,
                 },
                 body: JSON.stringify({
-                    id: taskId,
+                    id: props.currTask.task_id,
+                    aabhaId: props.currTask.patientName
                 }),
             })
-        }catch(err){
+
+            props.setAlert({ type: "success", msg: "Task Done Successfully" })
+            // navigate to dashboard
+            props.navigate("Dashboard")
+
+            setTimeout(() => {
+                props.setAlert(null);
+            }, 1800);
+
+        } catch (err) {
             console.log("Error Posting: ", err)
         }
     }
@@ -98,8 +111,7 @@ const PatientPrescr = (props) => {
                             fontWeight: 500,
                             textAlign: "start",
                             color: "#c2833",
-                        }}>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco l
+                        }}>{props.currTask.medicine}
 
                         </Text>
                     </View>
@@ -154,10 +166,17 @@ const PatientPrescr = (props) => {
 
             </ScrollView>
 
-
-            <TouchableOpacity style={[styles.navButton, styles.submitButton]} onPress={doneTask}>
-                <Text style={[styles.navButtonText, styles.submitButtonText]}>Done Task</Text>
-            </TouchableOpacity>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={onChangeText}
+                    value={aabha}
+                    placeholder="Enter Aabha ID..."
+                />
+                <TouchableOpacity style={[styles.navButton, styles.submitButton]} onPress={doneTask}>
+                    <Text style={[styles.navButtonText, styles.submitButtonText]}>Done Task</Text>
+                </TouchableOpacity>
+            </View>
 
         </View>
 
@@ -168,7 +187,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         height: "50%",
-
         alignSelf: "stretch", // Equivalent to h-fit (height fit)
         width: "50%",
         marginTop: "10%",
@@ -205,10 +223,12 @@ const styles = StyleSheet.create({
         height: '7%',
         width: '10%',
         backgroundColor: '#007AFF',
+        marginLeft: 40,
         borderRadius: 8,
         marginTop: '36%',
         alignItems: 'center',
         justifyContent: 'center',
+
     },
     navButtonText: {
         color: '#fff',
@@ -220,6 +240,14 @@ const styles = StyleSheet.create({
     submitButtonText: {
         fontWeight: 'bold',
     },
+      input: {
+        width: '15%',
+        marginTop: '36%',
+        height: 40,
+        borderColor: 'gray',
+        borderWidth: 1,
+        paddingHorizontal: 10,
+      },
 })
 
 export default PatientPrescr;

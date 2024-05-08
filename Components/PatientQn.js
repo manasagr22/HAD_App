@@ -156,15 +156,22 @@ const PatientQn = (props) => {
                     "Authorization": key,
                 },
                 body: JSON.stringify({
-                    pid: patientId,
+                    pid: parseInt(patientId),
                     qnName: 'adminQuestionnaire',
                     answers: responses
                 }),
+
             })
+            console.log(JSON.stringify({
+                pid: parseInt(patientId),
+                qnName: 'adminQuestionnaire',
+                answers: responses
+            }))
             if(response.ok)
                 props.setAlert({ type: "success", msg: "Form Submitted Successfully" });
-            else
-                props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });    
+            else{
+                props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });
+            }
 
         } catch (err) {
             props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });
@@ -244,8 +251,7 @@ const PatientQn = (props) => {
                 setPlay(false);
                 setPaused(!paused);
             }
-            else
-                playAudio();
+            playAudio();
         }
         else if (sound && !play && paused)
             pause();

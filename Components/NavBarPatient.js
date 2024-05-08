@@ -85,43 +85,43 @@ export default function NavBarPatient(props) {
 
 
   const handleLatestFollowUp = async () => {
-      try{
-        const url = new URL(props.URL);
-        url.pathname = "/checkFollowUp";
+    try {
+      const url = new URL(props.URL);
+      url.pathname = "/checkFollowUp";
 
-        url.searchParams.set('id', patientId);
+      url.searchParams.set('id', patientId);
 
-        const response = await fetch(url, {
-          method: 'GET',
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + props.jwtToken
-          }
-        })
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + props.jwtToken
+        }
+      })
 
-        if(response == null){
-          props.setAlert({ type: "danger", msg: "No Follow up at the moment" });
-          setTimeout(() => {
-            props.setAlert(null);
+      if (response == null) {
+        props.setAlert({ type: "danger", msg: "No Follow up at the moment" });
+        setTimeout(() => {
+          props.setAlert(null);
         }, 1800)
-        }
-        else{
-          response = response.json();
-
-          if(response.task_type === "questionnaire"){
-            props.navigate("Patient Questionnaire");
-          }
-          else if(response.task_type === "prescription"){
-            props.navigate("Patient Prescription");
-          }
-          else if(response.task_type === "appointment_for_field_worker"){
-            props.navigate("FW Appointment");
-          }
-        }
-
-      }catch(err){
-        console.log(err)
       }
+      else {
+        response = response.json();
+
+        if (response.task_type === "questionnaire") {
+          props.navigate("Patient Questionnaire");
+        }
+        else if (response.task_type === "prescription") {
+          props.navigate("Patient Prescription");
+        }
+        else if (response.task_type === "appointment_for_field_worker") {
+          props.navigate("FW Appointment");
+        }
+      }
+
+    } catch (err) {
+      console.log(err)
+    }
   }
 
   return (
@@ -156,7 +156,17 @@ export default function NavBarPatient(props) {
       </View>
 
       <View style={styles.buttonsContainer}>
-        <Text style={styles.titleText}>Hello, {patientName}</Text>
+        <Text
+          style={{
+
+            fontSize: 26,
+            fontWeight: "bold",
+            textAlign: "center",
+            color: "#686868",
+          }}
+        >
+          Hello, {props.currTask.patientName}
+        </Text>
         <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Prescription")}>
           <Text style={styles.buttonText}>Get Latest Follow Up</Text>
         </TouchableOpacity>
@@ -166,18 +176,18 @@ export default function NavBarPatient(props) {
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buttonLogout} activeOpacity={1} onPress={() => props.navigate("Dashboard")}>
-  <View style={styles.logoutContainer}>
-    <Text style={styles.buttonTextLogout}>Log Out Patient</Text>
-    <MaterialIcons name="logout" size={20} color="white" style={{ marginLeft: 5 }} />
-  </View>
-</TouchableOpacity>
+          <View style={styles.logoutContainer}>
+            <Text style={styles.buttonTextLogout}>Log Out Patient</Text>
+            <MaterialIcons name="logout" size={20} color="white" style={{ marginLeft: 5 }} />
+          </View>
+        </TouchableOpacity>
         {/*         
         <TouchableOpacity style={[styles.button, styles.secondaryButton]} activeOpacity={1} onPress={() => props.navigate("Register")}>
           <Text style={styles.buttonText}>Register Patient</Text>
         </TouchableOpacity> */}
         <TouchableOpacity style={styles.avatarButton} onPress={toggleMenu} activeOpacity={1}>
           <Image source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80' }} style={styles.avatar} />
-          {countNotification && countNotification !== 0 && <Notification/>}
+          {countNotification && countNotification !== 0 && <Notification />}
         </TouchableOpacity>
         <Modal
           transparent={true}
@@ -195,7 +205,7 @@ export default function NavBarPatient(props) {
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>Inbox</Text>
-              {countNotification && countNotification !== 0 && <NotificationNumber countNotification={countNotification}/>}
+              {countNotification && countNotification !== 0 && <NotificationNumber countNotification={countNotification} />}
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>Help</Text>
