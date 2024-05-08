@@ -91,6 +91,7 @@ export default function RegisterPatient(props) {
     useEffect(() => {
         async function getDistrict() {
             try {
+                console.log(props.jwtToken)
                 const res = await fetch(props.URL+"/fw/getFwDistrict", {
                     method: "GET",
                     headers: {
@@ -110,13 +111,17 @@ export default function RegisterPatient(props) {
             }
             catch {
                 props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                console.log("Teri maa ki chut")
                 props.navigate("Login")
             }
+            setTimeout(() => {
+                props.setAlert(null);
+            }, 1800)
         }
 
-        if(district === "")
+        if(district === "" && props.jwtToken)
             getDistrict();
-    }, [district])
+    }, [district, props.jwtToken])
 
     useEffect(() => {
         async function getSubDiv() {
@@ -140,13 +145,17 @@ export default function RegisterPatient(props) {
             }
             catch {
                 props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                console.log("Teri maa ki chut 2")
                 props.navigate("Login")
             }
+            setTimeout(() => {
+                props.setAlert(null);
+            }, 1800)
         }
 
-        if(subdiv === "")
+        if(subdiv === "" && props.jwtToken)
             getSubDiv();
-    }, [subdiv])
+    }, [subdiv, props.jwtToken])
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate;

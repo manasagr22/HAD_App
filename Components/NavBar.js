@@ -1,10 +1,86 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import Notification from './Notification';
+import NotificationNumber from './NotificationNumber';
+import io from 'socket.io-client';
 
 export default function NavBar(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
+  const [countNotification, setCountNotification] = useState(null);
+  const [notifications, setNotifications] = useState(null);
+  const SOCKET_URL = "https://e76a-103-156-19-229.ngrok-free.app"
+  const [msgReceived, setMsgReceived] = useState(null);
+
+  useEffect(() => {
+    async function connectSocket() {
+      const email = await props.getData("email")
+      if (!email)
+        props.navigate("Login");
+
+      const s = io(SOCKET_URL, {
+        reconnection: false,
+        query: `email=${email}&room=NotificationRoom`, //"room=" + room+",username="+username,
+      });
+
+      s.on('connect', () => {
+        console.log('Connected!');
+      });
+
+      s.on('receive_notification', (message) => {
+        console.log(message);
+        setMsgReceived(message)
+        //console.log('Received message:', message);
+      });
+
+      return () => {
+        s.disconnect();
+      };
+    }
+    connectSocket();
+  }, [])
+
+  useEffect(() => {
+    if(msgReceived) {
+      updateReceiverMessage(msgReceived)
+    }
+  }, [msgReceived])
+
+  const updateReceiverMessage = async(message)  => {
+    if(!countNotification) {
+      setCountNotification(1)
+      props.setFwNotification(1)
+    }
+    else {
+      setCountNotification(countNotification+1)
+      props.setFwNotification(countNotification + 1)
+    }
+  }
+
+  useEffect(() => {
+    async function getNotifications() {
+      const result = await fetch("http://localhost:8082/fw/getNotifications", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + props.jwtToken
+        }
+      }).then(res =>res.json());
+
+      if(result && result.length > 0) {
+        setNotifications(result);
+      }
+    }
+
+    if(!notifications && props.jwtToken) {
+      getNotifications();
+    }
+    else if(notifications) {
+      setCountNotification(notifications.length)
+      props.setFwNotification(notifications.length)
+    }
+  }, [notifications, props.jwtToken])
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -42,7 +118,6 @@ export default function NavBar(props) {
         const result = await response.json();
         if (result === true) {
           clear();
-          // props.setJwtToken(null);
           props.navigate("Login");
         }
         else {
@@ -102,6 +177,7 @@ export default function NavBar(props) {
         </TouchableOpacity>
         <TouchableOpacity style={styles.avatarButton} onPress={toggleMenu} activeOpacity={1}>
           <Image source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80' }} style={styles.avatar} />
+          {countNotification !== null && countNotification !== 0 ? <Notification/> : undefined}
         </TouchableOpacity>
         <Modal
           transparent={true}
@@ -119,6 +195,7 @@ export default function NavBar(props) {
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>Inbox</Text>
+              {countNotification && countNotification !== 0 ? <NotificationNumber countNotification={countNotification}/> : undefined}
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} activeOpacity={1} onPress={() => {
               handlePress(5)

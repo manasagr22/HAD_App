@@ -1,11 +1,87 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useEffect, useState } from 'react'
 import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-
+import { MaterialIcons } from '@expo/vector-icons';
+import Notification from './Notification';
+import NotificationNumber from './NotificationNumber';
 export default function NavBarPatient(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
   const [patientName, setPatientName] = useState("");
+  const [patientId, setPatientId] = useState(0);
+  const [countNotification, setCountNotification] = useState(null);
+  const [notifications, setNotifications] = useState(null);
+  const SOCKET_URL = "https://e76a-103-156-19-229.ngrok-free.app"
+  const [msgReceived, setMsgReceived] = useState(null);
+
+  useEffect(() => {
+    async function connectSocket() {
+      const email = await props.getData("email")
+      if (!email)
+        props.navigate("Login");
+
+      const s = io(SOCKET_URL, {
+        reconnection: false,
+        query: `email=${email}&room=NotificationRoom`, //"room=" + room+",username="+username,
+      });
+
+      s.on('connect', () => {
+        console.log('Connected!');
+      });
+
+      s.on('receive_notification', (message) => {
+        console.log(message);
+        setMsgReceived(message)
+        //console.log('Received message:', message);
+      });
+
+      return () => {
+        s.disconnect();
+      };
+    }
+    connectSocket();
+  }, [])
+
+  useEffect(() => {
+    if(msgReceived) {
+      updateReceiverMessage(msgReceived)
+    }
+  }, [msgReceived])
+
+  const updateReceiverMessage = async(message)  => {
+    if(!countNotification) {
+      setCountNotification(1)
+      props.setFwNotification(1)
+    }
+    else {
+      setCountNotification(countNotification+1)
+      props.setFwNotification(countNotification + 1)
+    }
+  }
+
+  useEffect(() => {
+    async function getNotifications() {
+      const result = await fetch("http://localhost:8082/fw/getNotifications", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + props.jwtToken
+        }
+      }).then(res =>res.json());
+
+      if(result && result.length > 0) {
+        setNotifications(result);
+      }
+    }
+
+    if(!notifications && props.jwtToken) {
+      getNotifications();
+    }
+    else if(notifications) {
+      setCountNotification(notifications.length)
+      props.setFwNotification(notifications.length)
+    }
+  }, [notifications, props.jwtToken])
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);
@@ -18,6 +94,15 @@ export default function NavBarPatient(props) {
     }
 
     fetchName()
+  }, []);
+
+  useEffect(() => {
+    const fetchId = async () => {
+      const patientId = await AsyncStorage.getItem('patientId');
+      setPatientId(patientId)
+    }
+
+    fetchId()
   }, []);
 
   const handlePress = (index) => {
@@ -71,6 +156,46 @@ export default function NavBarPatient(props) {
   }
 
 
+  const handleLatestFollowUp = async () => {
+    try {
+      const url = new URL(props.URL);
+      url.pathname = "/checkFollowUp";
+
+      url.searchParams.set('id', patientId);
+
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + props.jwtToken
+        }
+      })
+
+      if (response == null) {
+        props.setAlert({ type: "danger", msg: "No Follow up at the moment" });
+        setTimeout(() => {
+          props.setAlert(null);
+        }, 1800)
+      }
+      else {
+        response = response.json();
+
+        if (response.task_type === "questionnaire") {
+          props.navigate("Patient Questionnaire");
+        }
+        else if (response.task_type === "prescription") {
+          props.navigate("Patient Prescription");
+        }
+        else if (response.task_type === "appointment_for_field_worker") {
+          props.navigate("FW Appointment");
+        }
+      }
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.imgContainer}>
@@ -103,20 +228,38 @@ export default function NavBarPatient(props) {
       </View>
 
       <View style={styles.buttonsContainer}>
-      <Text style={styles.titleText}>Hello, {patientName}</Text>
+        <Text
+          style={{
+
+            fontSize: 26,
+            fontWeight: "bold",
+            textAlign: "center",
+            color: "#686868",
+          }}
+        >
+          Hello
+        </Text>
+        <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Prescription")}>
+          <Text style={styles.buttonText}>Get Latest Follow Up</Text>
+        </TouchableOpacity>
+
         <TouchableOpacity style={styles.button} activeOpacity={1} onPress={() => props.navigate("Patient Questionnaire")}>
-          <Text style={styles.buttonText}>Take Questionnaire</Text>
+          <Text style={styles.buttonText} >Take Admin Qn</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buttonLogout} activeOpacity={1} onPress={() => props.navigate("Dashboard")}>
-          <Text style={styles.buttonTextLogout}>Log Out Patient</Text>
+          <View style={styles.logoutContainer}>
+            <Text style={styles.buttonTextLogout}>Log Out Patient</Text>
+            <MaterialIcons name="logout" size={20} color="white" style={{ marginLeft: 5 }} />
+          </View>
         </TouchableOpacity>
-{/*         
+        {/*         
         <TouchableOpacity style={[styles.button, styles.secondaryButton]} activeOpacity={1} onPress={() => props.navigate("Register")}>
           <Text style={styles.buttonText}>Register Patient</Text>
         </TouchableOpacity> */}
         <TouchableOpacity style={styles.avatarButton} onPress={toggleMenu} activeOpacity={1}>
           <Image source={{ uri: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1480&q=80' }} style={styles.avatar} />
+          {countNotification !== null && countNotification !== 0 ? <Notification/> : undefined}
         </TouchableOpacity>
         <Modal
           transparent={true}
@@ -134,6 +277,7 @@ export default function NavBarPatient(props) {
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>Inbox</Text>
+              {countNotification && countNotification !== 0 ? <NotificationNumber countNotification={countNotification}/> : undefined}
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>Help</Text>
@@ -207,11 +351,13 @@ const styles = StyleSheet.create({
 
   },
   buttonLogout: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#FF0800',
-    borderRadius: 10,
-    marginRight: 15,
+    backgroundColor: '#FF0000', // Add your button background color
+    borderRadius: 5, // Add your button border radius
+    padding: 9, // Add your button padding
+    justifyContent: 'center', // Center items vertically
+    alignItems: 'center', // Center items horizontally
+    marginRight: 25,
+    borderRadius: 10
   },
   secondaryButton: {
     backgroundColor: '#EF4444',
@@ -221,8 +367,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   buttonTextLogout: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: 'white', // Add your text color
+    fontWeight: 'bold', // Add your text font weight
+  },
+  logoutContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   titleText: {
     color: 'black',

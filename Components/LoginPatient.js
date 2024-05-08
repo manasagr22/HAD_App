@@ -27,6 +27,7 @@ export default function LoginPatient(props) {
             if (response !== null) {
                 props.setAlert({ type: "success", msg: "Login Successful!" });
                 await AsyncStorage.setItem('patientId', response.publicId.toString());
+                console.log(response.publicId)
                 await AsyncStorage.setItem('patientName', response.firstName);
                 props.navigate("LoggedIn Patient");
 
