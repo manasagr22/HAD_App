@@ -11,7 +11,7 @@ export default function NavBarPatient(props) {
   const [patientId, setPatientId] = useState(0);
   const [countNotification, setCountNotification] = useState(null);
   const [notifications, setNotifications] = useState(null);
-  const SOCKET_URL = "https://e76a-103-156-19-229.ngrok-free.app"
+  const SOCKET_URL =  "https://dd99-119-161-98-68.ngrok-free.app"
   const [msgReceived, setMsgReceived] = useState(null);
 
   useEffect(() => {
@@ -275,7 +275,7 @@ export default function NavBarPatient(props) {
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>My Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
+            <TouchableOpacity style={styles.menuItem} activeOpacity={1} onPress={() => props.navigate("InboxPatient")}>
               <Text style={styles.menuItemText}>Inbox</Text>
               {countNotification && countNotification !== 0 ? <NotificationNumber countNotification={countNotification}/> : undefined}
             </TouchableOpacity>

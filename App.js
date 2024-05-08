@@ -13,6 +13,7 @@ import {
   Text,
   useColorScheme,
   View,
+  LogBox
 } from 'react-native';
 
 import {
@@ -326,7 +327,7 @@ const DashboardParent = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar fwNotification={fwNotification} setFwNotification={setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
+        <NavBar fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
         <View style={{ flex: 1, flexDirection: 'row' }}>
           <CalendarComponent currentSelectedDate={currentSelectedDate} setCurrentSelectedDate={setCurrentSelectedDate} taskList={props.taskList} />
@@ -370,7 +371,7 @@ const Register = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column" }}>
-        <NavBar fwNotification={fwNotification} setFwNotification={setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
+        <NavBar fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
         <ScrollView ref={scrollViewRef}>
           <RegisterPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} scrollViewRef={scrollViewRef} />
         </ScrollView>
@@ -386,7 +387,7 @@ const LoginPat = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBar fwNotification={fwNotification} setFwNotification={setFwNotification} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <NavBar URL={props.URL} fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
         <ScrollView>
           <LoginPatient URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
         </ScrollView>
@@ -425,7 +426,7 @@ const Chatting = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBar fwNotification={fwNotification} setFwNotification={setFwNotification} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <NavBar URL={props.URL} fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
         <Chat URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
       </View>
     </View>
@@ -462,7 +463,7 @@ const LoggedPat = (props) => {
     {props.alert ? <Alert alert={props.alert} /> : undefined}
     <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height, alignItems: 'center' }}>
 
-      <NavBarPatient fwNotification={fwNotification} setFwNotification={setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
+      <NavBarPatient fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
       <View style={styles.boxcontainer}>
         <Text style={styles.welcomeText}>Welcome to</Text>
@@ -501,7 +502,7 @@ const PatientQuesn = (props) => {
   return (
     <View style={[styles.background, styles.container]}>
 
-      <NavBarPatient fwNotification={fwNotification} setFwNotification={setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
+      <NavBarPatient fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} />
 
 
       {props.load ? <Spinner /> : undefined}
@@ -546,7 +547,7 @@ const PatientPrescription = (props) => {
   return (
     <View style={[styles.background, styles.container]}>
 
-      <NavBarPatient fwNotification={fwNotification} setFwNotification={setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} currTask={props.currTask} />
+      <NavBarPatient fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} currTask={props.currTask} />
 
 
       {props.load ? <Spinner /> : undefined}
@@ -590,7 +591,7 @@ const PatientAppointment = (props) => {
   return (
     <View style={[styles.background, styles.container]}>
 
-      <NavBarPatient fwNotification={fwNotification} setFwNotification={setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+      <NavBarPatient fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
 
 
       {props.load ? <Spinner /> : undefined}
@@ -637,8 +638,8 @@ const Inbox1 = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBar fwNotification={fwNotification} setFwNotification={setFwNotification} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
-        <Inbox fwNotification={fwNotification} setFwNotification={setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
+        <NavBar fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <Inbox fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
       </View>
     </View>
   )
@@ -674,8 +675,8 @@ const InboxPatient1 = (props) => {
       {props.load ? <Spinner /> : undefined}
       {props.alert ? <Alert alert={props.alert} /> : undefined}
       <View style={{ width: '100%', flex: 1, flexDirection: "column", height: Dimensions.get('window').height }}>
-        <NavBarPatient fwNotification={fwNotification} setFwNotification={setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
-        <Inbox fwNotification={fwNotification} setFwNotification={setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
+        <NavBarPatient fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} setJwtToken={props.setJwtToken} jwtToken={props.jwtToken} />
+        <Inbox fwNotification={props.fwNotification} setFwNotification={props.setFwNotification} URL={props.URL} navigate={navigation.navigate} setLoad={props.setLoad} setAlert={props.setAlert} jwtToken={props.jwtToken} storeData={props.storeData} getData={props.getData} isKeyboardVisible={isKeyboardVisible} />
       </View>
     </View>
   )

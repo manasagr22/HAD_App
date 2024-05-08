@@ -10,7 +10,7 @@ export default function NavBar(props) {
   const [menuVisible, setMenuVisible] = useState(false);
   const [countNotification, setCountNotification] = useState(null);
   const [notifications, setNotifications] = useState(null);
-  const SOCKET_URL = "https://e76a-103-156-19-229.ngrok-free.app"
+  const SOCKET_URL = "https://dd99-119-161-98-68.ngrok-free.app"
   const [msgReceived, setMsgReceived] = useState(null);
 
   useEffect(() => {
@@ -35,6 +35,7 @@ export default function NavBar(props) {
       });
 
       return () => {
+        console.log('Disconnecting socket...');
         s.disconnect();
       };
     }
@@ -60,7 +61,7 @@ export default function NavBar(props) {
 
   useEffect(() => {
     async function getNotifications() {
-      const result = await fetch("http://localhost:8082/fw/getNotifications", {
+      const result = await fetch(props.URL+"/fw/viewAllTasks", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -77,6 +78,7 @@ export default function NavBar(props) {
       getNotifications();
     }
     else if(notifications) {
+      console.log(notifications.length)
       setCountNotification(notifications.length)
       props.setFwNotification(notifications.length)
     }
@@ -193,7 +195,7 @@ export default function NavBar(props) {
             <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
               <Text style={styles.menuItemText}>My Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuItem} activeOpacity={1}>
+            <TouchableOpacity style={styles.menuItem} activeOpacity={1} onPress={() => props.navigate("Inbox")}>
               <Text style={styles.menuItemText}>Inbox</Text>
               {countNotification && countNotification !== 0 ? <NotificationNumber countNotification={countNotification}/> : undefined}
             </TouchableOpacity>
