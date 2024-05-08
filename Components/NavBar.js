@@ -9,50 +9,78 @@ export default function NavBar(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
   const [countNotification, setCountNotification] = useState(null);
-  // const SOCKET_URL = "https://e76a-103-156-19-229.ngrok-free.app"
-  // const [msgReceived, setMsgReceived] = useState(null);
+  const [notifications, setNotifications] = useState(null);
+  const SOCKET_URL = "https://e76a-103-156-19-229.ngrok-free.app"
+  const [msgReceived, setMsgReceived] = useState(null);
 
-  // useEffect(() => {
-  //   async function connectSocket() {
-  //     const email = await props.getData("email")
-  //     if (!email)
-  //       props.navigate("Login");
-  //     //console.log(email)
+  useEffect(() => {
+    async function connectSocket() {
+      const email = await props.getData("email")
+      if (!email)
+        props.navigate("Login");
 
-  //     //console.log(SOCKET_URL)
-  //     const s = io(SOCKET_URL, {
-  //       reconnection: false,
-  //       query: `email=${email}&room=NotificationRoom`, //"room=" + room+",username="+username,
-  //     });
-  //     // setClient(s)
+      const s = io(SOCKET_URL, {
+        reconnection: false,
+        query: `email=${email}&room=NotificationRoom`, //"room=" + room+",username="+username,
+      });
 
-  //     s.on('connect', () => {
-  //       console.log('Connected!');
-  //     });
+      s.on('connect', () => {
+        console.log('Connected!');
+      });
 
-  //     s.on('receive_notification', (message) => {
-  //       console.log(message);
-  //       setMsgReceived(message)
-  //       //console.log('Received message:', message);
-  //     });
+      s.on('receive_notification', (message) => {
+        console.log(message);
+        setMsgReceived(message)
+        //console.log('Received message:', message);
+      });
 
-  //     return () => {
-  //       console.log('Disconnected!')
-  //       s.disconnect();
-  //     };
-  //   }
-  //   connectSocket();
-  // }, [])
+      return () => {
+        s.disconnect();
+      };
+    }
+    connectSocket();
+  }, [])
 
-  // useEffect(() => {
-  //   if(msgReceived) {
-  //     updateReceiverMessage(msgReceived)
-  //   }
-  // }, [msgReceived])
+  useEffect(() => {
+    if(msgReceived) {
+      updateReceiverMessage(msgReceived)
+    }
+  }, [msgReceived])
 
-  // const updateReceiverMessage = async(message)  => {
-  //   ;
-  // }
+  const updateReceiverMessage = async(message)  => {
+    if(!countNotification) {
+      setCountNotification(1)
+      props.setFwNotification(1)
+    }
+    else {
+      setCountNotification(countNotification+1)
+      props.setFwNotification(countNotification + 1)
+    }
+  }
+
+  useEffect(() => {
+    async function getNotifications() {
+      const result = await fetch("http://localhost:8082/fw/getNotifications", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + props.jwtToken
+        }
+      }).then(res =>res.json());
+
+      if(result && result.length > 0) {
+        setNotifications(result);
+      }
+    }
+
+    if(!notifications && props.jwtToken) {
+      getNotifications();
+    }
+    else if(notifications) {
+      setCountNotification(notifications.length)
+      props.setFwNotification(notifications.length)
+    }
+  }, [notifications, props.jwtToken])
 
   const toggleMenu = () => {
     setMenuVisible(!menuVisible);

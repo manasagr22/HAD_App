@@ -146,6 +146,8 @@ const PatientQn = (props) => {
             console.log(responses);
             const URL = props.URL + "/fw/qLogic";
             const key = "Bearer " + props.jwtToken;
+
+            props.setLoad(true)
             const patientId = await AsyncStorage.getItem('patientId');
 
             console.log(patientId + ' teri maa ki chut');
@@ -177,6 +179,7 @@ const PatientQn = (props) => {
             props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });
             console.log(err);
         }
+        props.setLoad(false)
 
         setTimeout(() => {
             props.setAlert(null);
