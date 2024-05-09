@@ -10,7 +10,7 @@ export default function NavBar(props) {
   const [menuVisible, setMenuVisible] = useState(false);
   const [countNotification, setCountNotification] = useState(null);
   const [notifications, setNotifications] = useState(null);
-  const SOCKET_URL = "https://4d73-103-156-19-229.ngrok-free.app"
+  const SOCKET_URL = "https://ca4e-119-161-98-68.ngrok-free.app"
   const [msgReceived, setMsgReceived] = useState(null);
 
   useEffect(() => {

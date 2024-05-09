@@ -54,7 +54,7 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [URLMain, setURL] = useState("https://da50-103-156-19-229.ngrok-free.app");
+  const [URLMain, setURL] = useState("https://bbdc-119-161-98-68.ngrok-free.app");
   const [fwNotification, setFwNotification] = useState(null);
 
   const [currDayTaskList, setcurrDayTaskList] = useState([]);
