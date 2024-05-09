@@ -45,6 +45,7 @@ const Appointment = (props) => {
         const url = props.URL + '/fw/completeTask'
         const key = "Bearer " + props.jwtToken
         try {
+            props.setLoad(true)
             const response = await fetch(url, {
                 method: "POST",
                 headers: {
@@ -54,18 +55,20 @@ const Appointment = (props) => {
                 body: JSON.stringify({
                     id: parseInt(props.currTask['id']),
                     timestamp: new Date().toISOString(),
-                    // aabhaId: props.currTask.name
+                    aabha: aabha
                 }),
-            })
+            }).then(res=>res.json())
 
             console.log(JSON.stringify({
                 id: parseInt(props.currTask['id']),
                 timestamp: new Date().toISOString(),
                 // aabhaId: props.currTask.name
             }))
-            
+
+            if(response === true){
                 props.setAlert({ type: "success", msg: "Task Done Successfully" })
                 props.navigate("Dashboard")
+            }
 
             // navigate to dashboard
 
@@ -76,6 +79,8 @@ const Appointment = (props) => {
         } catch (err) {
             console.log("Error Posting: ", err)
         }
+
+        props.setLoad(false);
     }
 
     const [aabha, setaabha] = useState("");

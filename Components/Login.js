@@ -29,6 +29,7 @@ export default function Login(props) {
 
             props.setLoad(false);
             if (!res.ok) {
+                console.log("gfg")
                 props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
             }
             else {

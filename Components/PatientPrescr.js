@@ -15,7 +15,7 @@ const PatientPrescr = (props) => {
     const [aabha, setaabha] = useState('');
 
     const onChangeText = (inputText) => {
-      setText(inputText);
+      setaabha(inputText);
     };
 
     console.log("Hellloo", props.currTask)
@@ -56,6 +56,7 @@ const PatientPrescr = (props) => {
         const url = props.URL + '/fw/completeTask'
         const key = "Bearer " + props.jwtToken
         try {
+            props.setLoad(true);
             const response = await fetch(url, {
                 method: "POST",
                 headers: {
@@ -65,9 +66,10 @@ const PatientPrescr = (props) => {
                 body: JSON.stringify({
                     id: parseInt(props.currTask.id),
                     timestamp: new Date().toISOString(),
-                    // aabhaId: props.currTask.name
+                    aabha: aabha
                 }),
-            })
+            }).then(res=> res.json())
+
 
             console.log(JSON.stringify({
                 id: parseInt(props.currTask.id),
@@ -75,12 +77,11 @@ const PatientPrescr = (props) => {
                 // aabhaId: props.currTask.name
             }))
 
-                console.log(response.data);
+                    if(response === true){
+                        props.setAlert({ type: "success", msg: "Task Done Successfully" })
+                        props.navigate("Dashboard")
+                    }
                 
-                    props.setAlert({ type: "success", msg: "Task Done Successfully" })
-                    props.navigate("Dashboard")
-                
-            
             // navigate to dashboard
 
             setTimeout(() => {
@@ -90,6 +91,7 @@ const PatientPrescr = (props) => {
         } catch (err) {
             console.log("Error Posting: ", err)
         }
+        props.setLoad(false);
     }
 
     return (

@@ -22,6 +22,7 @@ const DoctorQn = (props) => {
         const url = props.URL + '/fw/completeTask'
         const key = "Bearer " + props.jwtToken
         try {
+          props.setLoad(true);
             const response = await fetch(url, {
                 method: "POST",
                 headers: {
@@ -31,10 +32,10 @@ const DoctorQn = (props) => {
                 body: JSON.stringify({
                     id: parseInt(props.currTask.id),
                     timestamp: new Date().toISOString(),
-                    answer: answer
-                    // aabhaId: props.currTask.name
+                    answer: answer,
+                    aabha: aabha
                 }),
-            })
+            }).then(res=> res.json());
 
 
             console.log(response.data);
@@ -52,6 +53,8 @@ const DoctorQn = (props) => {
         } catch (err) {
             console.log("Error Posting: ", err)
         }
+
+        props.setLoad(false);
     }
 
     const [answer, setanswer] = useState("");

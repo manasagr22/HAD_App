@@ -4,6 +4,7 @@ import { Image, Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } fro
 import { MaterialIcons } from '@expo/vector-icons';
 import Notification from './Notification';
 import NotificationNumber from './NotificationNumber';
+import io from 'socket.io-client';
 export default function NavBarPatient(props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -11,7 +12,7 @@ export default function NavBarPatient(props) {
   const [patientId, setPatientId] = useState(0);
   const [countNotification, setCountNotification] = useState(null);
   const [notifications, setNotifications] = useState(null);
-  const SOCKET_URL =  "https://dd99-119-161-98-68.ngrok-free.app"
+  const SOCKET_URL =  "https://4d73-103-156-19-229.ngrok-free.app"
   const [msgReceived, setMsgReceived] = useState(null);
 
   useEffect(() => {
