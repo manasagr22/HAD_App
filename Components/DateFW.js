@@ -69,6 +69,7 @@ const DateFW = (props) => {
             const url = `${URL}?${params}`;
 
             try{
+                console.log(currDate)
                 if(currDate.length > 0){
                 const response = await fetch(url, {
                     method: "GET",
@@ -76,29 +77,37 @@ const DateFW = (props) => {
                         "Content-Type": "application/json",
                         Authorization: key,
                     },
-                }).then(res => res.json());
-            
+                }).then(response => response.json());
 
+                // if(response.ok) {
+                // const responseJson = await response.json();
+                // console.log(responseJson)
+                // }
+                // else {
+                //     console.log(response)
+                // }
+            
+                // console.log(response)
                 props.setcurrDayTaskList(response);
                 //console.log('hello ', props.currDayTaskList)
                 
                 
             }
 
-            }catch(e){
-                props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
-                //console.log(e)
+            }catch(e) {
+                // props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+                console.log(e)
             }
         }
         
-
-        fetchCurrDateTasks();
+        if(currDate.length > 0 && props.jwtToken)
+            fetchCurrDateTasks();
 
         setTimeout(() => {
             props.setAlert(null);
         }, 1800)
         
-    }, [currDate]);
+    }, [currDate, props.jwtToken]);
 
 
 

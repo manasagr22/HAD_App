@@ -10,7 +10,7 @@ export default function NavBar(props) {
   const [menuVisible, setMenuVisible] = useState(false);
   const [countNotification, setCountNotification] = useState(null);
   const [notifications, setNotifications] = useState(null);
-  const SOCKET_URL = "https://ca4e-119-161-98-68.ngrok-free.app"
+  const SOCKET_URL = "https://dd99-119-161-98-68.ngrok-free.app"
   const [msgReceived, setMsgReceived] = useState(null);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function NavBar(props) {
       s.on('receive_notification', (message) => {
         //console.log(message);
         setMsgReceived(message)
-        ////console.log('Received message:', message);
+        console.log('Received message:', message);
       });
 
       return () => {
@@ -119,7 +119,8 @@ export default function NavBar(props) {
       else {
         const result = await response.json();
         if (result === true) {
-          clear();
+          // clear();
+          await AsyncStorage.removeItem("/");
           props.navigate("Login");
         }
         else {

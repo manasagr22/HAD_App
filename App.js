@@ -54,7 +54,7 @@ function App() {
   const [jwtToken, setJwtToken] = useState(null);
   const [load, setLoad] = useState(false);
   const [alert, setAlert] = useState(null);
-  const [URLMain, setURL] = useState("https://bbdc-119-161-98-68.ngrok-free.app");
+  const [URLMain, setURL] = useState("https://d8db-119-161-98-68.ngrok-free.app");
   const [fwNotification, setFwNotification] = useState(null);
 
   const [currDayTaskList, setcurrDayTaskList] = useState([]);
@@ -286,8 +286,13 @@ const LoginFW = (props) => {
               }),
 
             })
-            if (response1.ok)
+            if (response1.ok) {
+              await AsyncStorage.removeItem('responses');
+              await AsyncStorage.removeItem('regPat');
+              await AsyncStorage.removeItem('patientId');
+              await AsyncStorage.removeItem('patientName');
               props.setAlert({ type: "success", msg: "Data Uploaded Successfully" });
+            }
             else
               props.setAlert({ type: "danger", msg: "Unable to Upload Data" });
           }
@@ -324,9 +329,11 @@ const DashboardParent = (props) => {
 
     const fetchAllTasks = async () => {
 
+      if(props.jwtToken) {
       const url = props.URL + '/fw/viewAllTasks'
 
       try {
+        props.setLoad(true)
         const key = "Bearer " + props.jwtToken;
         const response = await fetch(url, {
           method: "GET",
@@ -335,6 +342,9 @@ const DashboardParent = (props) => {
             "Authorization": key
           }
         }).then((res) => res.json())
+        // console.log("Response: ", response)
+
+        if(response && response.length > 0) {
 
         let tasksByDate = {};
 
@@ -355,17 +365,19 @@ const DashboardParent = (props) => {
         });
 
         props.setTaskList(tasksByDate)
-
-
+      }
       } catch (err) {
-        props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+        // props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+        setTimeout(() => {
+          props.setAlert(null);
+        }, 1800)
         //console.log(err)
       }
+      props.setLoad(false)
+    }
     }
 
-    fetchAllTasks();
-
-
+      fetchAllTasks();
   }, []);
 
 
