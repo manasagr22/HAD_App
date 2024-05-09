@@ -46,7 +46,7 @@ export default function ChannelList(props) {
     }
 
     async function openChat() {
-        //console.log(props.userEmail)
+        ////console.log(props.userEmail)
         const URL = props.URL + "/fw/getChats"
         const params = new URLSearchParams({
             id: props.userEmail,
@@ -60,7 +60,7 @@ export default function ChannelList(props) {
             }
         }).then(res => res.json());
         props.setChatData(result);
-        //console.log(result);
+        ////console.log(result);
         props.setUser({ id: props.userEmail, name: props.name, data: props.data })
     }
 

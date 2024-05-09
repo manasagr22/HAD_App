@@ -91,7 +91,7 @@ export default function RegisterPatient(props) {
     useEffect(() => {
         async function getDistrict() {
             try {
-                console.log(props.jwtToken)
+                //console.log(props.jwtToken)
                 const res = await fetch(props.URL+"/fw/getFwDistrict", {
                     method: "GET",
                     headers: {
@@ -101,18 +101,22 @@ export default function RegisterPatient(props) {
                 })
 
                 if(!res.ok) {
-                    props.setAlert({type: "danger", msg: "Server Error Occurred!"})
-                    props.navigate("Login")
+                    setDistrict(await AsyncStorage.getItem("district"))
+                    // props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                    // props.navigate("Login")
                 }
                 else {
                     const result = await res.json();
                     setDistrict(result.district);
+                    await AsyncStorage.setItem("district", result.district)
                 }
             }
             catch {
-                props.setAlert({type: "danger", msg: "Server Error Occurred!"})
-                console.log("Teri maa ki chut")
-                props.navigate("Login")
+                setDistrict(await AsyncStorage.getItem("district"))
+                // props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                // awairt
+                // //console.log("Teri maa ki chut")
+                // props.navigate("Login")
             }
             setTimeout(() => {
                 props.setAlert(null);
@@ -135,18 +139,20 @@ export default function RegisterPatient(props) {
                 })
 
                 if(!res.ok) {
-                    props.setAlert({type: "danger", msg: "Server Error Occurred!"})
-                    props.navigate("Login")
+                    // props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                    // props.navigate("Login")
+                    setSubDiv(await AsyncStorage.getItem("subDiv"))
                 }
                 else {
                     const result = await res.json();
                     setSubDiv(result.subdist);
+                    await AsyncStorage.setItem("subDiv", result.subdist)
                 }
             }
             catch {
-                props.setAlert({type: "danger", msg: "Server Error Occurred!"})
-                console.log("Teri maa ki chut 2")
-                props.navigate("Login")
+                setSubDiv(await AsyncStorage.getItem("subDiv"))
+                // props.setAlert({type: "danger", msg: "Server Error Occurred!"})
+                // props.navigate("Login")
             }
             setTimeout(() => {
                 props.setAlert(null);
@@ -230,12 +236,12 @@ export default function RegisterPatient(props) {
                     setDate("")
                     setMobile("")
                     setGender("")
-                    // console.log(response.patient.id)
+                    // //console.log(response.patient.id)
                     // setPatientId(response.patient.id);
                     await AsyncStorage.setItem('patientId', response.publicId.toString());
                     await AsyncStorage.setItem('patientName', response.firstName);
 
-                    console.log('HELOOOOOOO ' + AsyncStorage.getItem('patientId'));
+                    //console.log('HELOOOOOOO ' + AsyncStorage.getItem('patientId'));
                     props.navigate("LoggedIn Patient");
                 }
                 else {
@@ -243,8 +249,22 @@ export default function RegisterPatient(props) {
                 }
             }
         } catch (error) {
+            // props.setLoad(false);
+            // props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
             props.setLoad(false);
-            props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
+            await AsyncStorage.setItem('regPat', JSON.stringify(data));
+            //console.log("OFFLINE:" , await AsyncStorage.getItem('regPat'));
+            props.setAlert({ type: "success", msg: "Registeration Successful!" });
+                    setFName("")
+                    setLName("")
+                    setAabha("")
+                    setAddress("")
+                    setAge("")
+                    setEmail("")
+                    setDate("")
+                    setMobile("")
+                    setGender("")
+            props.navigate("LoggedIn Patient");
         }
 
         setTimeout(() => {

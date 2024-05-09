@@ -20,10 +20,10 @@ const AgendaComponent = () => {
         items={items}
         // Callback that gets called when items for a certain month should be loaded
         loadItemsForMonth={(month) => {
-          console.log('Month: ', month);
+          //console.log('Month: ', month);
           // Simulate data loading
           setTimeout(() => {
-            console.log('Data loaded');
+            //console.log('Data loaded');
           }, 1000);
         }}
         // Specify how agenda items should be rendered

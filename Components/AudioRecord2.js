@@ -65,7 +65,7 @@ export default function AudioRecorder(props) {
 
     const stop = async () => {
       let audioFile = await AudioRecord.stop();
-      console.log(audioFile);
+      //console.log(audioFile);
       const audioContent = await RNFS.readFile(audioFile, 'base64');
       props.setAudioFile(audioContent);
       props.handledescriptive(props.currQInd, audioContent);

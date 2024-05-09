@@ -27,13 +27,13 @@ export default function NavBarPatient(props) {
       });
 
       s.on('connect', () => {
-        console.log('Connected!');
+        //console.log('Connected!');
       });
 
       s.on('receive_notification', (message) => {
-        console.log(message);
+        //console.log(message);
         setMsgReceived(message)
-        //console.log('Received message:', message);
+        ////console.log('Received message:', message);
       });
 
       return () => {
@@ -193,7 +193,7 @@ export default function NavBarPatient(props) {
       }
 
     } catch (err) {
-      console.log(err)
+      //console.log(err)
     }
   }
 

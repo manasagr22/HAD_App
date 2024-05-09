@@ -46,14 +46,14 @@ const CalendarComponent = (props) => {
     useEffect(() => {
         // get all tasks
         // then create item json
-        console.log('items updated')
+        //console.log('items updated')
         setItems(props.taskList)
     }, [props.taskList]);
 
     // Get today's date in YYYY-MM-DD format
     const today = new Date();
     const formattedToday = today.toISOString().split('T')[0];
-    console.log(formattedToday)
+    //console.log(formattedToday)
     // State to store selected date
     const [selectedDate, setSelectedDate] = useState('');
 

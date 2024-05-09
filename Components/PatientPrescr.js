@@ -18,7 +18,7 @@ const PatientPrescr = (props) => {
       setaabha(inputText);
     };
 
-    console.log("Hellloo", props.currTask)
+    //console.log("Hellloo", props.currTask)
     // useEffect(() => {
 
     //     const fetchtask = async () => {
@@ -71,12 +71,6 @@ const PatientPrescr = (props) => {
             }).then(res=> res.json())
 
 
-            console.log(JSON.stringify({
-                id: parseInt(props.currTask.id),
-                timestamp: new Date().toISOString(),
-                // aabhaId: props.currTask.name
-            }))
-
                     if(response === true){
                         props.setAlert({ type: "success", msg: "Task Done Successfully" })
                         props.navigate("Dashboard")
@@ -89,7 +83,7 @@ const PatientPrescr = (props) => {
             }, 1800);
 
         } catch (err) {
-            console.log("Error Posting: ", err)
+            //console.log("Error Posting: ", err)
         }
         props.setLoad(false);
     }

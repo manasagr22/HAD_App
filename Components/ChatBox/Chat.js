@@ -34,7 +34,7 @@ export default function Chat(props) {
 
   // const SOCKET_URL = props.URL + "/ws-message";
   // // const Client = Stomp.client(`ws://${SOCKET_URL});
-  // //console.log(SOCKET_URL)
+  // ////console.log(SOCKET_URL)
   const SOCKET_URL = "https://4d73-103-156-19-229.ngrok-free.app"
 
   useEffect(() => {
@@ -43,9 +43,9 @@ export default function Chat(props) {
       setSenderEmail(email);
       if (!email)
         props.navigate("Login");
-      //console.log(email)
+      ////console.log(email)
 
-      //console.log(SOCKET_URL)
+      ////console.log(SOCKET_URL)
       const s = io(SOCKET_URL, {
         reconnection: false,
         query: `email=${email}&room=ChatRoom`, //"room=" + room+",username="+username,
@@ -53,7 +53,7 @@ export default function Chat(props) {
       setClient(s)
 
       s.on('connect', () => {
-        //console.log('Connected!');
+        ////console.log('Connected!');
       });
 
       s.on('read_message', (message) => {
@@ -68,7 +68,7 @@ export default function Chat(props) {
           }
         };
         setMsgReceived(newMessage)
-        //console.log('Received message:', message);
+        ////console.log('Received message:', message);
       });
 
       return () => {
@@ -124,8 +124,8 @@ export default function Chat(props) {
       // Update the data array with the latest message
       setData((prevData) => {
         const newData = [...prevData]; // Create a shallow copy of the data array
-        //console.log(newData)
-        //console.log(newData[conversationIndex])
+        ////console.log(newData)
+        ////console.log(newData[conversationIndex])
         newData[conversationIndex].data = message.data; // Update the data of the conversation
         newData[conversationIndex].id = message.id;
         newData[conversationIndex].name = message.name;
@@ -208,8 +208,8 @@ export default function Chat(props) {
       // Update the data array with the latest message
       setData((prevData) => {
         const newData = [...prevData]; // Create a shallow copy of the data array
-        //console.log(newData)
-        //console.log(newData[conversationIndex])
+        ////console.log(newData)
+        ////console.log(newData[conversationIndex])
         newData[conversationIndex].data = message.data; // Update the data of the conversation
         newData[conversationIndex].id = message.id;
         newData[conversationIndex].name = message.name;
@@ -248,9 +248,9 @@ export default function Chat(props) {
 
   useEffect(() => {
     async function sendPrivateMessage(text, to, date, time, senderName, receiverName) {
-      //console.log(client);
+      ////console.log(client);
       if (client) {
-        //console.log(text, to);
+        ////console.log(text, to);
         client.emit("send_message", {
           messageContent: text,
           to: to,
@@ -271,7 +271,7 @@ export default function Chat(props) {
           }
         }
 
-        //console.log("Send Message: ", newMessage)
+        ////console.log("Send Message: ", newMessage)
 
         updateDataWithMessage(newMessage);
 
@@ -283,7 +283,7 @@ export default function Chat(props) {
   }, [client])
 
   useEffect(() => {
-    // //console.log(props.isKeyboardVisible);
+    // ////console.log(props.isKeyboardVisible);
     ;
   }, [props.isKeyboardVisible])
 
@@ -392,7 +392,7 @@ export default function Chat(props) {
   useEffect(() => {
     if (chatDataWithLabels !== null) {
       if (flatListRef.current) {
-        // //console.log(props.isKeyboardVisible)
+        // ////console.log(props.isKeyboardVisible)
         const offset = parseInt(Dimensions.get('window').height + props.isKeyboardVisible[1] + countMessages * 2000)
         flatListRef.current.scrollToOffset({ animated: false, offset: offset })
         // flatListRef.current.scrollToOffset({ animated: false, offset: 0 });

@@ -12,7 +12,7 @@ export default function Login(props) {
 
     async function signIn() {
         const url = props.URL + "/auth/login"
-        console.log(url);
+        //console.log(url);
         props.setLoad(true);
 
         try {
@@ -29,7 +29,7 @@ export default function Login(props) {
 
             props.setLoad(false);
             if (!res.ok) {
-                console.log("gfg")
+                //console.log("gfg")
                 props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
             }
             else {
@@ -42,13 +42,14 @@ export default function Login(props) {
                     setEmail("")
                     setPass("")
                     props.setJwtToken(result.jwtToken);
+                    await props.storeData("/", result.jwtToken)
                 }
                 else {
                     props.setAlert({ type: "danger", msg: "Invalid Login!" });
                 }
             }
         } catch (e) {
-            console.log(e)
+            //console.log(e)
             props.setLoad(false);
             props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
         }

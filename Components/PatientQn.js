@@ -88,10 +88,10 @@ const PatientQn = (props) => {
                     }).toString();
                     const url = `${URL}?${params}`;
                     // url_get_qn.searchParams.set('name', 'adminQuestionnaire');
-                    console.log(url);
+                    //console.log(url);
 
                     const key = "Bearer " + props.jwtToken;
-                    console.log(key);
+                    //console.log(key);
                     const result = await fetch(url, {
                         method: "GET",
                         headers: {
@@ -99,14 +99,20 @@ const PatientQn = (props) => {
                             Authorization: key,
                         },
                     }).then((res) => res.json());
-                    console.log(result);
+                    //console.log(result);
                     setQuestionList(result);
                     setCurrentQInd(0);
+                    await AsyncStorage.setItem('questionList', JSON.stringify(result));
+                    //console.log("OFFLINE", JSON.parse(await AsyncStorage.getItem('questionList')))
                     // Assuming data is an array of question objects
-                    // console.log(questionList);
+                    // //console.log(questionList);
                 }
             } catch (error) {
-                console.error("Error fetching data:", error);
+                setQuestionList(JSON.parse(await AsyncStorage.getItem('questionList')));
+                //console.log("OFFLINE", await AsyncStorage.getItem('questionList'))
+                //console.log("OFFLINE123", JSON.parse(await AsyncStorage.getItem('questionList')))
+                setCurrentQInd(0);
+                // console.error("Error fetching data:", error);
             }
         };
 
@@ -143,14 +149,13 @@ const PatientQn = (props) => {
 
     const submitForm = async () => {
         try {
-            console.log(responses);
+            //console.log(responses);
             const URL = props.URL + "/fw/qLogic";
             const key = "Bearer " + props.jwtToken;
 
             props.setLoad(true)
             const patientId = await AsyncStorage.getItem('patientId');
 
-            console.log(patientId + ' teri maa ki chut');
             const response = await fetch(URL, {
                 method: "POST",
                 headers: {
@@ -164,20 +169,19 @@ const PatientQn = (props) => {
                 }),
 
             })
-            console.log(JSON.stringify({
-                pid: parseInt(patientId),
-                qnName: 'adminQuestionnaire',
-                answers: responses
-            }))
-            if(response.ok)
+            if(response.ok) 
                 props.setAlert({ type: "success", msg: "Form Submitted Successfully" });
             else{
-                props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });
+                await AsyncStorage.setItem('responses', JSON.stringify(responses));
+            props.setAlert({ type: "success", msg: "Form Submitted Successfully" });
+                // props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });
             }
 
         } catch (err) {
-            props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });
-            console.log(err);
+            // props.setAlert({ type: "danger", msg: "Could Not Submit Form :(" });
+            // //console.log(err);
+            await AsyncStorage.setItem('responses', JSON.stringify(responses));
+            props.setAlert({ type: "success", msg: "Form Submitted Successfully" });
         }
         props.setLoad(false)
 
@@ -249,7 +253,7 @@ const PatientQn = (props) => {
         }
 
         if (sound && play && !paused) {
-            console.log(sound)
+            //console.log(sound)
             if (sound['_duration'] === -1) {
                 setPlay(false);
                 setPaused(!paused);

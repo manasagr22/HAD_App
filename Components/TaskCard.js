@@ -8,7 +8,7 @@ const TaskCard = (props) => {
   const navigation = useNavigation();
 
   const deadlineDateString = props.task.deadline;
-  console.log('bc:', props.task)
+  //console.log('bc:', props.task)
 
   // Parse the date string using moment
   const deadlineDate = moment(deadlineDateString);
@@ -23,15 +23,15 @@ const TaskCard = (props) => {
 
     if(props.task.type !== undefined){
       if( props.task.type === 'prescription'){
-        console.log('Prescription');
+        //console.log('Prescription');
         navigation.navigate("Patient Prescription");
       }
       else if( props.task.type === 'appointment_for_field_worker'){
-        console.log('Appointment');
+        //console.log('Appointment');
         navigation.navigate("Patient Appointment");
       }
       else if(props.task.type === 'questionnaire'){
-        console.log('QN');
+        //console.log('QN');
         navigation.navigate("Doctor Questionnaire");
       }
     }

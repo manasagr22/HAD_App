@@ -99,7 +99,7 @@ export default function InputBox(props) {
                 }));
             }
 
-            //console.log("Receiver Email: ", props.email);
+            ////console.log("Receiver Email: ", props.email);
 
             props.sendMessageSocket(searchText, props.email, date, time, props.senderName, props.name)
             setSearchText("");

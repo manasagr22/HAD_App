@@ -14,13 +14,13 @@ const Appointment = (props) => {
     const [appointmentDuration, setappointmentDuration] = useState("")
     const currentTask = props.currTask;
 
-    console.log("CURRRENT ", props.currTask);
+    //console.log("CURRRENT ", props.currTask);
 
-    console.log(props.currTask['appointment'])
+    //console.log(props.currTask['appointment'])
     const deadlineDateString = props.currTask['deadline'];
 
-    console.log(deadlineDateString)
-    console.log(props.currTask.name)
+    //console.log(deadlineDateString)
+    //console.log(props.currTask.name)
 
 
     // Parse the date string using moment
@@ -29,12 +29,12 @@ const Appointment = (props) => {
 
     // Format the date as "D MMM YYYY"
     const formattedDate = deadlineDate.format('D MMM YYYY');
-    console.log(formattedDate);
+    //console.log(formattedDate);
 
     const timeString = props.currTask['time'];
     const deadlineTime = moment(timeString, 'HH:mm');
     const formattedTime = deadlineTime.format('h:mm a');
-    console.log(formattedTime)
+    //console.log(formattedTime)
 
     // Format the combined date and time
     //   const formattedDateTime = combinedDateTime.format('D MMM YYYY, h:mm a');
@@ -59,11 +59,6 @@ const Appointment = (props) => {
                 }),
             }).then(res=>res.json())
 
-            console.log(JSON.stringify({
-                id: parseInt(props.currTask['id']),
-                timestamp: new Date().toISOString(),
-                // aabhaId: props.currTask.name
-            }))
 
             if(response === true){
                 props.setAlert({ type: "success", msg: "Task Done Successfully" })
@@ -77,7 +72,7 @@ const Appointment = (props) => {
             }, 1800);
 
         } catch (err) {
-            console.log("Error Posting: ", err)
+            //console.log("Error Posting: ", err)
         }
 
         props.setLoad(false);

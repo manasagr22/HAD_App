@@ -22,12 +22,12 @@ export default function LoginPatient(props) {
             }).then(res => res.json());
 
             props.setLoad(false);
-            console.log(response);
+            //console.log(response);
 
             if (response !== null) {
                 props.setAlert({ type: "success", msg: "Login Successful!" });
                 await AsyncStorage.setItem('patientId', response.publicId.toString());
-                console.log(response.publicId)
+                //console.log(response.publicId)
                 await AsyncStorage.setItem('patientName', response.firstName);
                 props.navigate("LoggedIn Patient");
 
@@ -37,7 +37,7 @@ export default function LoginPatient(props) {
             }
 
         } catch (err) {
-            console.log(err);
+            //console.log(err);
             props.setLoad(false);
             props.setAlert({ type: "error", msg: "Some error occurred", })
         }

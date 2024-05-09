@@ -25,17 +25,17 @@ export default function NavBar(props) {
       });
 
       s.on('connect', () => {
-        console.log('Connected!');
+        //console.log('Connected!');
       });
 
       s.on('receive_notification', (message) => {
-        console.log(message);
+        //console.log(message);
         setMsgReceived(message)
-        //console.log('Received message:', message);
+        ////console.log('Received message:', message);
       });
 
       return () => {
-        console.log('Disconnecting socket...');
+        //console.log('Disconnecting socket...');
         s.disconnect();
       };
     }
@@ -78,7 +78,7 @@ export default function NavBar(props) {
       getNotifications();
     }
     else if(notifications) {
-      console.log(notifications.length)
+      //console.log(notifications.length)
       setCountNotification(notifications.length)
       props.setFwNotification(notifications.length)
     }

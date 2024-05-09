@@ -7,12 +7,12 @@ const AudioPlayer = ({ audioPath }) => {
 
   const startPlayback = async () => {
     const result = await audioRecorderPlayer.startPlayer(audioPath);
-    console.log(result);
+    //console.log(result);
   };
 
   const stopPlayback = async () => {
     const result = await audioRecorderPlayer.stopPlayer();
-    console.log(result);
+    //console.log(result);
   };
 
   return (

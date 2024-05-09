@@ -11,7 +11,7 @@ const DateFW = (props) => {
     const [currInd, setcurrInd] = useState(0);
     const currDate = props.currentSelectedDate;
 
-    console.log('Date: ' + currDate);
+    //console.log('Date: ' + currDate);
 
     
 
@@ -80,15 +80,14 @@ const DateFW = (props) => {
             
 
                 props.setcurrDayTaskList(response);
-                console.log('hello ', props.currDayTaskList)
+                //console.log('hello ', props.currDayTaskList)
                 
                 
             }
 
             }catch(e){
-                console.log("MAA chud gayi")
                 props.setAlert({ type: "danger", msg: "Some Error Occurred!" });
-                console.log(e)
+                //console.log(e)
             }
         }
         

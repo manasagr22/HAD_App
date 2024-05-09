@@ -38,7 +38,7 @@ const DoctorQn = (props) => {
             }).then(res=> res.json());
 
 
-            console.log(response.data);
+            //console.log(response.data);
           
                 props.setAlert({ type: "success", msg: "Task Done Successfully" })
                 props.navigate("Dashboard")
@@ -51,7 +51,7 @@ const DoctorQn = (props) => {
             }, 1800);
 
         } catch (err) {
-            console.log("Error Posting: ", err)
+            //console.log("Error Posting: ", err)
         }
 
         props.setLoad(false);
